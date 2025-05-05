@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,6 +62,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				warp: {
+					purple: "#8B5CF6",
+					"purple-light": "#A78BFA",
+					"purple-dark": "#7C3AED",
+					pink: "#EC4899",
+					indigo: "#6366F1"
 				}
 			},
 			borderRadius: {
@@ -84,11 +92,23 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'pulse-gradient': {
+					'0%, 100%': { 
+						backgroundPosition: '0% 50%' 
+					},
+					'50%': { 
+						backgroundPosition: '100% 50%' 
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'pulse-gradient': 'pulse-gradient 10s ease infinite'
+			},
+			backgroundImage: {
+				'gradient-warp': 'linear-gradient(45deg, #8B5CF6, #EC4899, #6366F1)'
 			}
 		}
 	},
