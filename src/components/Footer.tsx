@@ -1,5 +1,7 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { Github } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -14,11 +16,14 @@ const Footer: React.FC = () => {
             <p className="text-sm">
               Built with ❤️ By <a href="https://jadefolio.lovable.app/" target="_blank" rel="noopener noreferrer" className="text-warp-purple hover:underline">JadeOfWallstreet</a>
             </p>
+            <a href="https://github.com/jadeofwallstreet/viralwarp" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground">
+              <Github size={18} />
+            </a>
           </div>
           <div className="flex items-center gap-4">
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms</a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy</a>
-            <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</a>
+            <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Terms</Link>
+            <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Privacy</Link>
+            <Link to="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Help</Link>
           </div>
         </div>
       </div>
