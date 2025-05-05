@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
@@ -9,18 +10,97 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Users, Share2, Heart, MessageSquare } from 'lucide-react';
+import { useFarcaster } from '@/components/FarcasterProvider';
+import { createRequest } from '@/services/requestsService';
+import { useToast } from '@/hooks/use-toast';
 
 const CreateRequest = () => {
-  const [requestType, setRequestType] = useState<string>('follow');
+  const navigate = useNavigate();
+  const { user, isAuthenticated, login } = useFarcaster();
+  const { toast } = useToast();
+  
+  const [requestType, setRequestType] = useState<"follow" | "recast" | "like" | "comment">("follow");
   const [price, setPrice] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [castUrl, setCastUrl] = useState<string>('');
+  const [target, setTarget] = useState<string>('10');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here we would handle the submission logic
-    console.log({ requestType, price, description, castUrl });
-    alert("Request created successfully! (This is a demo)");
+    
+    if (!isAuthenticated || !user) {
+      toast({
+        title: "Authentication required",
+        description: "Please connect your Farcaster account to create a request",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!price || parseFloat(price) <= 0) {
+      toast({
+        title: "Invalid price",
+        description: "Please enter a valid price greater than 0",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (requestType !== "follow" && !castUrl) {
+      toast({
+        title: "Cast URL required",
+        description: `Please provide a cast URL for the ${requestType} request`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (!target || parseInt(target) <= 0) {
+      toast({
+        title: "Invalid target",
+        description: "Please enter a valid target number of engagements",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Format price with dollar sign if not present
+      const formattedPrice = price.startsWith('$') ? price : `$${price}`;
+      
+      createRequest(
+        requestType,
+        formattedPrice,
+        description,
+        requestType !== "follow" ? castUrl : undefined,
+        user.fid,
+        user.username,
+        parseInt(target)
+      );
+      
+      toast({
+        title: "Request created",
+        description: "Your engagement request has been created successfully"
+      });
+      
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error creating request:", error);
+      toast({
+        title: "Request failed",
+        description: "There was an error creating your request",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleConnect = async () => {
+    await login();
   };
 
   return (
@@ -32,6 +112,22 @@ const CreateRequest = () => {
             <h1 className="text-3xl font-bold mb-2">Create Engagement Request</h1>
             <p className="text-muted-foreground">Choose what type of engagement you want and set your price</p>
           </div>
+
+          {!isAuthenticated && (
+            <Card className="mb-6 border-warp-purple/30">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg font-medium">Connect your Farcaster account</h3>
+                    <p className="text-muted-foreground mt-1">
+                      You need to connect your account to create requests
+                    </p>
+                  </div>
+                  <Button onClick={handleConnect}>Connect</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <Card>
             <CardHeader>
@@ -47,7 +143,7 @@ const CreateRequest = () => {
                     <Label className="text-base">Request Type</Label>
                     <RadioGroup 
                       value={requestType} 
-                      onValueChange={setRequestType}
+                      onValueChange={(value) => setRequestType(value as "follow" | "recast" | "like" | "comment")}
                       className="grid grid-cols-2 gap-4 mt-2"
                     >
                       <Label
@@ -130,6 +226,22 @@ const CreateRequest = () => {
                   </div>
 
                   <div className="space-y-2">
+                    <Label htmlFor="target">Target Number of Engagements</Label>
+                    <Input
+                      id="target"
+                      type="number"
+                      min="1"
+                      placeholder="10"
+                      value={target}
+                      onChange={(e) => setTarget(e.target.value)}
+                      required
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      How many total engagements do you want?
+                    </p>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label htmlFor="description">Description (Optional)</Label>
                     <Textarea
                       id="description"
@@ -143,9 +255,13 @@ const CreateRequest = () => {
               </form>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <Button variant="outline">Cancel</Button>
-              <Button className="bg-gradient-warp hover:opacity-90" onClick={handleSubmit}>
-                Create Request
+              <Button variant="outline" onClick={() => navigate("/dashboard")}>Cancel</Button>
+              <Button 
+                className="bg-gradient-warp hover:opacity-90" 
+                onClick={handleSubmit}
+                disabled={!isAuthenticated || isSubmitting}
+              >
+                {isSubmitting ? "Creating..." : "Create Request"}
               </Button>
             </CardFooter>
           </Card>

@@ -1,6 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { getCurrentUser, connectToFarcaster, logoutFromFarcaster } from "@/services/farcasterAuth";
+import { toast } from "@/hooks/use-toast";
 
 interface FarcasterUser {
   fid: number;
@@ -16,6 +17,7 @@ interface FarcasterContextType {
   isAdmin: boolean;
   login: () => Promise<void>;
   logout: () => void;
+  isReady: boolean;
 }
 
 const FarcasterContext = createContext<FarcasterContextType>({
@@ -24,39 +26,60 @@ const FarcasterContext = createContext<FarcasterContextType>({
   isAdmin: false,
   login: async () => {},
   logout: () => {},
+  isReady: false,
 });
 
 export const useFarcaster = () => useContext(FarcasterContext);
 
 export const FarcasterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<FarcasterUser | null>(null);
+  const [isReady, setIsReady] = useState(false);
   
   useEffect(() => {
+    // Check if we're in a Farcaster environment
+    const isFarcasterEnvironment = typeof window !== "undefined" && !!window.farcaster;
+    
+    if (!isFarcasterEnvironment) {
+      console.warn("Not running in Farcaster client environment");
+      setIsReady(true);
+      return;
+    }
+
     // Check for existing user on component mount
     const currentUser = getCurrentUser();
     if (currentUser) {
       setUser(currentUser);
     }
     
-    // Check if we're in Farcaster environment and add listener for auth changes
-    if (typeof window !== "undefined" && window.farcaster) {
-      const handleAuthChange = () => {
-        const updatedUser = getCurrentUser();
-        setUser(updatedUser);
-      };
-      
-      // Listen for auth changes
-      window.addEventListener("farcaster:user:update", handleAuthChange);
-      
-      return () => {
-        window.removeEventListener("farcaster:user:update", handleAuthChange);
-      };
-    }
+    // Listen for auth changes
+    const handleAuthChange = () => {
+      const updatedUser = getCurrentUser();
+      setUser(updatedUser);
+    };
+    
+    window.addEventListener("farcaster:auth:change", handleAuthChange);
+    
+    // Mark provider as ready
+    setIsReady(true);
+    
+    return () => {
+      window.removeEventListener("farcaster:auth:change", handleAuthChange);
+    };
   }, []);
   
   const login = async () => {
-    const user = await connectToFarcaster();
-    setUser(user);
+    try {
+      const user = await connectToFarcaster();
+      setUser(user);
+      return user;
+    } catch (error) {
+      console.error("Login failed:", error);
+      toast({
+        title: "Login failed",
+        description: "Could not connect to Farcaster",
+        variant: "destructive"
+      });
+    }
   };
   
   const logout = () => {
@@ -70,6 +93,7 @@ export const FarcasterProvider: React.FC<{ children: ReactNode }> = ({ children 
     isAdmin: user?.isAdmin || false,
     login,
     logout,
+    isReady
   };
   
   return (

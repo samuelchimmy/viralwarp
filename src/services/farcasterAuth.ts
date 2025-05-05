@@ -12,6 +12,9 @@ interface FarcasterUser {
 // Initial null state for unauthenticated user
 let currentUser: FarcasterUser | null = null;
 
+// Custom event for auth changes
+const FARCASTER_AUTH_CHANGE = 'farcaster:auth:change';
+
 export const getCurrentUser = (): FarcasterUser | null => {
   return currentUser;
 };
@@ -32,7 +35,7 @@ export const connectToFarcaster = async (): Promise<FarcasterUser | null> => {
       return null;
     }
 
-    // Request user signature from Farcaster
+    // Request user login from Farcaster client
     const { success, data, error } = await window.farcaster.loginUser();
     
     if (!success || !data) {
@@ -50,12 +53,15 @@ export const connectToFarcaster = async (): Promise<FarcasterUser | null> => {
       username: data.username,
       displayName: data.displayName || data.username,
       pfp: data.pfpUrl || "",
-      // Admin is @508 (would normally compare fid but using username for demo)
+      // Admin is @508 (comparing username for demo)
       isAdmin: data.username === "508",
     };
 
     // Store farcaster auth info in localStorage
     localStorage.setItem("farcaster_user", JSON.stringify(currentUser));
+    
+    // Dispatch custom event for auth change
+    window.dispatchEvent(new CustomEvent(FARCASTER_AUTH_CHANGE));
     
     toast({
       title: "Connected to Farcaster",
@@ -77,6 +83,10 @@ export const connectToFarcaster = async (): Promise<FarcasterUser | null> => {
 export const logoutFromFarcaster = (): void => {
   currentUser = null;
   localStorage.removeItem("farcaster_user");
+  
+  // Dispatch custom event for auth change
+  window.dispatchEvent(new CustomEvent(FARCASTER_AUTH_CHANGE));
+  
   toast({
     title: "Logged out",
     description: "You've been disconnected from Farcaster",

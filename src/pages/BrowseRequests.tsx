@@ -1,97 +1,42 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
-import { Users, Share2, Heart, MessageSquare, Search } from "lucide-react";
-
-// Mock data for requests
-const mockRequests = [
-  {
-    id: 1,
-    type: "follow",
-    username: "alice.eth",
-    price: "$2.00",
-    description: "New to Farcaster! Looking for initial followers.",
-    icon: <Users className="h-5 w-5" />,
-    date: "2025-05-04"
-  },
-  {
-    id: 2,
-    type: "recast",
-    username: "bob.lens",
-    price: "$3.50",
-    description: "Please recast my announcement about the new NFT drop!",
-    icon: <Share2 className="h-5 w-5" />,
-    date: "2025-05-04"
-  },
-  {
-    id: 3,
-    type: "like",
-    username: "carol.fc",
-    price: "$1.00",
-    description: "Need more likes on my research thread about L2s.",
-    icon: <Heart className="h-5 w-5" />,
-    date: "2025-05-03"
-  },
-  {
-    id: 4,
-    type: "comment",
-    username: "dave.warp",
-    price: "$5.00",
-    description: "Looking for thoughtful comments on my latest proposal.",
-    icon: <MessageSquare className="h-5 w-5" />,
-    date: "2025-05-03"
-  },
-  {
-    id: 5,
-    type: "follow",
-    username: "emma.cast",
-    price: "$2.50",
-    description: "Tech writer looking to grow audience for my AI research.",
-    icon: <Users className="h-5 w-5" />,
-    date: "2025-05-02"
-  },
-  {
-    id: 6,
-    type: "recast",
-    username: "frank.fc",
-    price: "$4.00",
-    description: "Help promote my new Farcaster client app release!",
-    icon: <Share2 className="h-5 w-5" />,
-    date: "2025-05-02"
-  },
-  {
-    id: 7,
-    type: "like",
-    username: "grace.eth",
-    price: "$1.25",
-    description: "Need engagement on my DeFi analysis thread.",
-    icon: <Heart className="h-5 w-5" />,
-    date: "2025-05-02"
-  },
-  {
-    id: 8,
-    type: "comment",
-    username: "henry.lens",
-    price: "$3.75",
-    description: "Looking for feedback on my new protocol design.",
-    icon: <MessageSquare className="h-5 w-5" />,
-    date: "2025-05-01"
-  },
-];
+import { Search, Loader2 } from "lucide-react";
+import { getAllRequests, EngagementRequest } from '@/services/requestsService';
 
 const BrowseRequests = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [sortOption, setSortOption] = useState("newest");
+  const [requests, setRequests] = useState<EngagementRequest[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Load requests
+    const loadRequests = () => {
+      try {
+        const allRequests = getAllRequests();
+        // Only show active requests
+        const activeRequests = allRequests.filter(req => req.status !== "completed");
+        setRequests(activeRequests);
+      } catch (error) {
+        console.error("Error loading requests:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRequests();
+  }, []);
 
   // Filter and sort the requests
-  const filteredRequests = mockRequests.filter(request => {
+  const filteredRequests = requests.filter(request => {
     const matchesSearch = request.username.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          request.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === "all" || request.type === filterType;
@@ -108,6 +53,21 @@ const BrowseRequests = () => {
     }
     return 0;
   });
+
+  if (loading) {
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-1 py-12">
+          <div className="container text-center py-16">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p className="text-muted-foreground">Loading requests...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -179,6 +139,9 @@ const BrowseRequests = () => {
                     <p className="font-semibold mb-1">@{request.username}</p>
                     <p className="text-sm text-muted-foreground mb-2">{request.description}</p>
                     <p className="text-xs text-muted-foreground">Posted: {request.date}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Remaining: {request.remaining} / {request.target}
+                    </p>
                   </div>
                   <Button 
                     className="w-full"

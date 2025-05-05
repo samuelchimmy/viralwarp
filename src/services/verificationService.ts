@@ -12,9 +12,30 @@ interface VerificationRequest {
   paymentStatus: "pending" | "paid";
 }
 
-// Mock data store - in production this would be in Supabase
-const verificationRequests: VerificationRequest[] = [];
-let nextVerificationId = 1;
+// In a production app, this would be stored in Supabase
+// For now, we'll use localStorage to persist between sessions
+const getVerificationRequests = (): VerificationRequest[] => {
+  try {
+    const saved = localStorage.getItem("verification_requests");
+    return saved ? JSON.parse(saved) : [];
+  } catch (error) {
+    console.error("Error loading verification requests:", error);
+    return [];
+  }
+};
+
+const saveVerificationRequests = (requests: VerificationRequest[]): void => {
+  try {
+    localStorage.setItem("verification_requests", JSON.stringify(requests));
+  } catch (error) {
+    console.error("Error saving verification requests:", error);
+  }
+};
+
+let verificationRequests = getVerificationRequests();
+let nextVerificationId = verificationRequests.length > 0 
+  ? Math.max(...verificationRequests.map(r => r.id)) + 1 
+  : 1;
 
 export const submitVerification = async (requestId: number, userId: number, username: string): Promise<boolean> => {
   try {
@@ -44,6 +65,7 @@ export const submitVerification = async (requestId: number, userId: number, user
     };
 
     verificationRequests.push(newRequest);
+    saveVerificationRequests(verificationRequests);
 
     toast({
       title: "Verification submitted",
@@ -70,36 +92,76 @@ export const checkVerificationStatus = (requestId: number, userId: number): "pen
   return request ? request.status : "none";
 };
 
+// Function to verify follow action using Farcaster API
+const verifyFollow = async (username: string, currentUserFid: number): Promise<boolean> => {
+  try {
+    if (!window.farcaster) {
+      return false;
+    }
+
+    // Get target user details by username
+    const targetUserDetails = await window.farcaster.fetchUserDetail({ username });
+    if (!targetUserDetails?.data) {
+      return false;
+    }
+
+    // In a real implementation, you would check if currentUserFid follows targetUserFid
+    // For now we'll return true as the verification would happen server-side
+    
+    return true; // Admin will manually verify for now
+  } catch (error) {
+    console.error("Error verifying follow:", error);
+    return false;
+  }
+};
+
+// Function to verify cast engagement (like, recast, comment)
+const verifyCastEngagement = async (
+  castUrl: string,
+  type: "like" | "recast" | "comment",
+  currentUserFid: number
+): Promise<boolean> => {
+  try {
+    if (!window.farcaster) {
+      return false;
+    }
+
+    // Parse castUrl to get hash
+    const urlObj = new URL(castUrl);
+    const pathParts = urlObj.pathname.split('/');
+    const castHash = pathParts[pathParts.length - 1];
+    
+    if (!castHash) {
+      return false;
+    }
+    
+    // In a real implementation, you would fetch the cast and check if the user has engaged with it
+    // For now we'll return true as the verification would happen server-side or by admin
+    
+    return true; // Admin will manually verify for now
+  } catch (error) {
+    console.error(`Error verifying ${type}:`, error);
+    return false;
+  }
+};
+
 export const verifyEngagement = async (
   requestType: string,
   castUrl: string | undefined,
   username: string
 ): Promise<boolean> => {
   try {
-    // In a real implementation, this would call the Farcaster API to verify
-    // For this demo version, we'll simulate verification with a delay
+    // In a real implementation, this would use the Farcaster API to verify
+    // For this demo, we'll simulate verification with a user confirmation
     
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // Mock successful verification 80% of the time
-        const isVerified = Math.random() > 0.2;
-        
-        if (isVerified) {
-          toast({
-            title: "Verification successful",
-            description: `${requestType} action was confirmed`,
-          });
-        } else {
-          toast({
-            title: "Verification failed",
-            description: `Could not verify your ${requestType} action`,
-            variant: "destructive",
-          });
-        }
-        
-        resolve(isVerified);
-      }, 1500);
+    // This would be the real verification logic using Farcaster API
+    // For now, we assume the verification was successful and will be checked by admin
+    toast({
+      title: "Verification request submitted",
+      description: `Your ${requestType} action will be verified by an admin`,
     });
+    
+    return true;
   } catch (error) {
     console.error("Error verifying engagement:", error);
     toast({
@@ -122,8 +184,8 @@ export const adminVerify = async (verificationId: number, approve: boolean): Pro
     return false;
   }
   
-  const request = verificationRequests.find(req => req.id === verificationId);
-  if (!request) {
+  const requestIndex = verificationRequests.findIndex(req => req.id === verificationId);
+  if (requestIndex === -1) {
     toast({
       title: "Request not found",
       description: "Verification request does not exist",
@@ -132,12 +194,21 @@ export const adminVerify = async (verificationId: number, approve: boolean): Pro
     return false;
   }
   
-  request.status = approve ? "approved" : "rejected";
+  verificationRequests[requestIndex].status = approve ? "approved" : "rejected";
+  saveVerificationRequests(verificationRequests);
   
   toast({
     title: `Request ${approve ? "approved" : "rejected"}`,
-    description: `Verification for ${request.username} has been ${approve ? "approved" : "rejected"}`,
+    description: `Verification for ${verificationRequests[requestIndex].username} has been ${approve ? "approved" : "rejected"}`,
   });
   
   return true;
+};
+
+export const getAdminVerificationRequests = (): VerificationRequest[] => {
+  if (!isAdmin()) {
+    return [];
+  }
+  
+  return verificationRequests.filter(req => req.status === "pending");
 };
