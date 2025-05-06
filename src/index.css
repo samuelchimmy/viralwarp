@@ -103,4 +103,13 @@
   .warp-card {
     @apply bg-white dark:bg-card border border-border rounded-lg shadow-sm hover:shadow-md transition-all;
   }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
 }

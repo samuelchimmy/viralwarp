@@ -21,15 +21,15 @@ const HeroSection: React.FC = () => {
   return (
     <section className="py-16 md:py-24 relative overflow-hidden">
       <div className="container">
-        <div className="flex flex-col md:flex-row items-center gap-8">
-          <div className="flex-1 text-center md:text-left">
+        <div className="flex flex-col items-center gap-12">
+          <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">
               Boost Your <span className="gradient-text">Farcaster</span> Presence
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mb-10">
+            <p className="text-xl md:text-2xl text-muted-foreground mb-10">
               Incentivize engagement, grow your followers, and increase your reach with ViralWarp - the ultimate growth platform for Farcaster.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
               <Button 
                 size="lg" 
                 className="bg-gradient-warp hover:opacity-90 text-lg"
@@ -48,7 +48,7 @@ const HeroSection: React.FC = () => {
             </div>
           </div>
           
-          <div className={`flex-1 mt-8 md:mt-0 transition-opacity duration-1000 ${showConversation ? 'opacity-100' : 'opacity-0'}`}>
+          <div className={`w-full transition-opacity duration-1000 ${showConversation ? 'opacity-100' : 'opacity-0'}`}>
             <FoundingConversation />
           </div>
         </div>
