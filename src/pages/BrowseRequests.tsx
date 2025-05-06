@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNavigate } from "react-router-dom";
-import { Search, Loader2 } from "lucide-react";
+import { Search, Loader2, Users, Share2, Heart, MessageSquare } from "lucide-react";
 import { getAllRequests, EngagementRequest } from '@/services/requestsService';
 
 const BrowseRequests = () => {
@@ -16,6 +16,22 @@ const BrowseRequests = () => {
   const [sortOption, setSortOption] = useState("newest");
   const [requests, setRequests] = useState<EngagementRequest[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Function to render the appropriate icon based on the icon name
+  const renderIcon = (iconName: string) => {
+    switch (iconName) {
+      case "Users":
+        return <Users className="h-5 w-5" />;
+      case "Share2":
+        return <Share2 className="h-5 w-5" />;
+      case "Heart":
+        return <Heart className="h-5 w-5" />;
+      case "MessageSquare":
+        return <MessageSquare className="h-5 w-5" />;
+      default:
+        return <Users className="h-5 w-5" />;
+    }
+  };
 
   useEffect(() => {
     // Load requests
@@ -129,7 +145,7 @@ const BrowseRequests = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex items-center gap-2">
                       <div className="p-2 bg-warp-purple/10 rounded-full">
-                        {request.icon}
+                        {renderIcon(request.icon)}
                       </div>
                       <span className="font-medium capitalize">{request.type}</span>
                     </div>

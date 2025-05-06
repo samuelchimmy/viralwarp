@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Users, Share2, Heart, MessageSquare, DollarSign } from "lucide-react";
 
-// Mock data
+// Mock data with string icon names
 const createdRequests = [
   {
     id: 1,
@@ -16,7 +16,7 @@ const createdRequests = [
     target: 20,
     price: "$2.00",
     total: "$40.00",
-    icon: <Users className="h-5 w-5" />,
+    icon: "Users",
     date: "2025-05-02",
     status: "active"
   },
@@ -27,7 +27,7 @@ const createdRequests = [
     target: 10,
     price: "$3.50",
     total: "$35.00",
-    icon: <Share2 className="h-5 w-5" />,
+    icon: "Share2",
     date: "2025-05-01",
     status: "active"
   },
@@ -38,7 +38,7 @@ const createdRequests = [
     target: 25,
     price: "$1.00",
     total: "$25.00",
-    icon: <Heart className="h-5 w-5" />,
+    icon: "Heart",
     date: "2025-04-28",
     status: "completed"
   }
@@ -52,7 +52,7 @@ const fulfilledRequests = [
     price: "$2.50",
     date: "2025-05-03",
     status: "paid",
-    icon: <Users className="h-5 w-5" />
+    icon: "Users"
   },
   {
     id: 102,
@@ -61,7 +61,7 @@ const fulfilledRequests = [
     price: "$4.00",
     date: "2025-05-02",
     status: "paid",
-    icon: <Share2 className="h-5 w-5" />
+    icon: "Share2"
   },
   {
     id: 103,
@@ -70,9 +70,25 @@ const fulfilledRequests = [
     price: "$5.00",
     date: "2025-05-01",
     status: "paid",
-    icon: <MessageSquare className="h-5 w-5" />
+    icon: "MessageSquare"
   }
 ];
+
+// Function to render icon based on icon name
+const renderIcon = (iconName: string) => {
+  switch (iconName) {
+    case "Users":
+      return <Users className="h-5 w-5" />;
+    case "Share2":
+      return <Share2 className="h-5 w-5" />;
+    case "Heart":
+      return <Heart className="h-5 w-5" />;
+    case "MessageSquare":
+      return <MessageSquare className="h-5 w-5" />;
+    default:
+      return <Users className="h-5 w-5" />;
+  }
+};
 
 // Summary data
 const summaryData = {
@@ -161,7 +177,7 @@ const Dashboard = () => {
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div className="flex items-center gap-3">
                           <div className="p-2 bg-warp-purple/10 rounded-full">
-                            {request.icon}
+                            {renderIcon(request.icon)}
                           </div>
                           <div>
                             <p className="font-semibold capitalize">{request.type} Request</p>
@@ -207,7 +223,7 @@ const Dashboard = () => {
                       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <div className="flex items-center gap-3">
                           <div className="p-2 bg-warp-purple/10 rounded-full">
-                            {request.icon}
+                            {renderIcon(request.icon)}
                           </div>
                           <div>
                             <p className="font-semibold capitalize">@{request.username}'s {request.type} Request</p>

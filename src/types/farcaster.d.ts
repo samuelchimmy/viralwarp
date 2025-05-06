@@ -30,6 +30,7 @@ interface FarcasterWallet {
     };
     error?: string;
   }>;
+  ethProvider: any; // EIP-1193 provider
 }
 
 interface FarcasterCastResponse {
@@ -105,6 +106,71 @@ interface FarcasterClient {
   wallet: FarcasterWallet;
 }
 
+// Farcaster Frame SDK types
+interface FrameSDK {
+  actions: {
+    ready: (options?: { disableNativeGestures?: boolean }) => Promise<void>;
+    close: () => Promise<void>;
+    openUrl: (url: string) => Promise<void>;
+    addFrame: () => Promise<void>;
+    viewProfile: (options: { fid: number }) => Promise<void>;
+    signIn: () => Promise<any>;
+  };
+  wallet: {
+    ethProvider: any; // EIP-1193 provider
+  };
+  context: {
+    user: {
+      fid: number;
+      username?: string;
+      displayName?: string;
+      pfpUrl?: string;
+    };
+    location?: {
+      type: 'cast_embed' | 'notification' | 'launcher' | 'channel';
+      embed?: string;
+      cast?: {
+        fid: number;
+        hash: string;
+      };
+      notification?: {
+        notificationId: string;
+        title: string;
+        body: string;
+      };
+      channel?: {
+        key: string;
+        name: string;
+        imageUrl?: string;
+      };
+    };
+    client: {
+      clientFid: number;
+      added: boolean;
+      safeAreaInsets?: {
+        top: number;
+        bottom: number;
+        left: number;
+        right: number;
+      };
+      notificationDetails?: {
+        url: string;
+        token: string;
+      };
+    };
+  };
+  experimental: {
+    sendToken: (options: {
+      token?: string;
+      amount?: string;
+      recipientAddress?: string;
+      recipientFid?: number;
+    }) => Promise<any>;
+    viewToken: (options: { token: string }) => Promise<void>;
+  };
+}
+
 interface Window {
   farcaster?: FarcasterClient;
+  sdk?: FrameSDK;
 }

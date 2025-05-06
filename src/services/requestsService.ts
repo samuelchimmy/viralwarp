@@ -9,7 +9,7 @@ export interface EngagementRequest {
   username: string;
   price: string;
   description: string;
-  icon: React.ReactNode;
+  icon: string; // Changed from React.ReactNode to string
   date: string;
   castUrl?: string;
   remaining: number;
@@ -53,19 +53,19 @@ const saveRequests = (requests: EngagementRequest[]): void => {
   }
 };
 
-// Function to get the appropriate icon for each engagement type
-const getIconForType = (type: string): React.ReactNode => {
+// Function to get the appropriate icon name for each engagement type
+const getIconForType = (type: string): string => {
   switch (type) {
     case "follow":
-      return <Users className="h-5 w-5" />;
+      return "Users";
     case "recast":
-      return <Share2 className="h-5 w-5" />;
+      return "Share2";
     case "like":
-      return <Heart className="h-5 w-5" />;
+      return "Heart";
     case "comment":
-      return <MessageSquare className="h-5 w-5" />;
+      return "MessageSquare";
     default:
-      return <Users className="h-5 w-5" />;
+      return "Users";
   }
 };
 
@@ -84,7 +84,7 @@ if (requests.length === 0) {
       username: "508",
       price: "$2.00",
       description: "Looking for followers to grow my network!",
-      icon: <Users className="h-5 w-5" />,
+      icon: "Users",
       date: new Date().toISOString().split('T')[0],
       remaining: 20,
       creatorFid: 508,
@@ -98,7 +98,7 @@ if (requests.length === 0) {
       username: "508",
       price: "$3.50",
       description: "Please recast my announcement about EngageToEarn!",
-      icon: <Share2 className="h-5 w-5" />,
+      icon: "Share2",
       date: new Date().toISOString().split('T')[0],
       castUrl: "https://warpcast.com/508/0x123",
       remaining: 15,
@@ -113,7 +113,7 @@ if (requests.length === 0) {
       username: "508",
       price: "$1.00",
       description: "Need more likes on my latest thread about Farcaster!",
-      icon: <Heart className="h-5 w-5" />,
+      icon: "Heart",
       date: new Date().toISOString().split('T')[0],
       castUrl: "https://warpcast.com/508/0x456",
       remaining: 25,
@@ -128,7 +128,7 @@ if (requests.length === 0) {
       username: "508",
       price: "$5.00",
       description: "Looking for thoughtful comments on my latest proposal.",
-      icon: <MessageSquare className="h-5 w-5" />,
+      icon: "MessageSquare",
       date: new Date().toISOString().split('T')[0],
       castUrl: "https://warpcast.com/508/0x789",
       remaining: 10,
