@@ -1,101 +1,125 @@
-
-import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { getCurrentUser, connectToFarcaster, logoutFromFarcaster } from "@/services/farcasterAuth";
-import { toast } from "@/hooks/use-toast";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  ReactNode,
+} from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface FarcasterUser {
   fid: number;
   username: string;
-  displayName: string;
-  pfp: string;
-  isAdmin: boolean;
+  displayName?: string;
+  pfpUrl?: string;
+  bio?: string;
+  connectedAddress?: `0x${string}`;
 }
 
-interface FarcasterContextType {
+type FarcasterContextType = {
   user: FarcasterUser | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
-  login: () => Promise<void>;
+  login: () => Promise<FarcasterUser | void>; // Modified to accept FarcasterUser or void
   logout: () => void;
   isReady: boolean;
+};
+
+const FarcasterContext = createContext<FarcasterContextType | undefined>(
+  undefined
+);
+
+interface FarcasterProviderProps {
+  children: ReactNode;
 }
 
-const FarcasterContext = createContext<FarcasterContextType>({
-  user: null,
-  isAuthenticated: false,
-  isAdmin: false,
-  login: async () => {},
-  logout: () => {},
-  isReady: false,
-});
-
-export const useFarcaster = () => useContext(FarcasterContext);
-
-export const FarcasterProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
   const [user, setUser] = useState<FarcasterUser | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isReady, setIsReady] = useState(false);
-  
-  useEffect(() => {
-    // Check if we're in a Farcaster environment
-    const isFarcasterEnvironment = typeof window !== "undefined" && !!window.farcaster;
-    
-    if (!isFarcasterEnvironment) {
-      console.warn("Not running in Farcaster client environment");
-      setIsReady(true);
-      return;
-    }
+  const { toast } = useToast();
 
-    // Check for existing user on component mount
-    const currentUser = getCurrentUser();
-    if (currentUser) {
-      setUser(currentUser);
+  useEffect(() => {
+    // Simulate checking localStorage or cookies for existing auth
+    const storedUser = localStorage.getItem("farcasterUser");
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser) as FarcasterUser;
+        setUser(parsedUser);
+        setIsAuthenticated(true);
+        setIsAdmin(parsedUser.fid === 508); // Example admin check
+      } catch (error) {
+        console.error("Error parsing stored user:", error);
+        localStorage.removeItem("farcasterUser"); // Clear invalid data
+      }
     }
-    
-    // Listen for auth changes
-    const handleAuthChange = () => {
-      const updatedUser = getCurrentUser();
-      setUser(updatedUser);
-    };
-    
-    window.addEventListener("farcaster:auth:change", handleAuthChange);
-    
-    // Mark provider as ready
-    setIsReady(true);
-    
-    return () => {
-      window.removeEventListener("farcaster:auth:change", handleAuthChange);
-    };
+    setIsReady(true); // Mark provider as ready after attempting to restore session
   }, []);
-  
-  const login = async () => {
+
+  const login = async (): Promise<FarcasterUser | void> => {
     try {
-      const user = await connectToFarcaster();
-      setUser(user);
-      return user;
+      if (!window.farcaster) {
+        throw new Error("Farcaster client not available");
+      }
+
+      const authResponse = await window.farcaster.loginUser();
+
+      if (authResponse.success && authResponse.data) {
+        const { fid, username, displayName, pfpUrl } = authResponse.data;
+
+        const farcasterUser: FarcasterUser = {
+          fid,
+          username,
+          displayName,
+          pfpUrl,
+        };
+
+        setUser(farcasterUser);
+        setIsAuthenticated(true);
+        setIsAdmin(farcasterUser.fid === 508); // Example admin check
+        localStorage.setItem("farcasterUser", JSON.stringify(farcasterUser));
+
+        toast({
+          title: "Login Successful",
+          description: `Welcome, ${username}!`,
+        });
+
+        return farcasterUser;
+      } else {
+        throw new Error(authResponse.error || "Login failed");
+      }
     } catch (error) {
       console.error("Login failed:", error);
       toast({
-        title: "Login failed",
+        title: "Login Failed",
         description: "Could not connect to Farcaster",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
-  
+
   const logout = () => {
-    logoutFromFarcaster();
     setUser(null);
+    setIsAuthenticated(false);
+    setIsAdmin(false);
+    localStorage.removeItem("farcasterUser");
+
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
   };
-  
+
   const value = {
     user,
-    isAuthenticated: !!user,
-    isAdmin: user?.isAdmin || false,
+    isAuthenticated,
+    isAdmin,
     login,
     logout,
-    isReady
+    isReady,
   };
-  
+
   return (
     <FarcasterContext.Provider value={value}>
       {children}
@@ -103,4 +127,12 @@ export const FarcasterProvider: React.FC<{ children: ReactNode }> = ({ children 
   );
 };
 
-export default FarcasterProvider;
+const useFarcaster = () => {
+  const context = useContext(FarcasterContext);
+  if (context === undefined) {
+    throw new Error("useFarcaster must be used within a FarcasterProvider");
+  }
+  return context;
+};
+
+export { FarcasterProvider, useFarcaster };

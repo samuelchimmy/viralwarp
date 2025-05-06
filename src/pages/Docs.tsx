@@ -14,6 +14,55 @@ const Docs: React.FC = () => {
           
           <Card className="mb-8">
             <CardHeader>
+              <CardTitle>The ViralWarp Origin Story</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                ViralWarp was born from a simple conversation on Farcaster. Our founder (@508) was struggling with visibility on the platform
+                and reached out to Farcaster founder Dan Romero (dwr.eth) about the challenges new users face:
+              </p>
+              
+              <div className="border-l-4 border-warp-purple pl-4 my-6 py-2">
+                <p className="italic text-muted-foreground mb-2">
+                  "Am I shadowbanned? Where can I learn about farcaster visibility algorithm? I seem to be the only one reading my casts. 
+                  It would be nice if the team can work on an algorithm that gives new casters some visibility to grow audience if they are consistent."
+                </p>
+                <p className="text-sm text-right">- @508</p>
+              </div>
+              
+              <p className="text-muted-foreground mb-4">
+                The response was honest but highlighted a real problem:
+              </p>
+              
+              <div className="border-l-4 border-warp-purple pl-4 my-6 py-2">
+                <p className="italic text-muted-foreground mb-2">
+                  "You're not shadow banned. You have 33 followers. Not many people are going to see your casts unfortunately."
+                </p>
+                <p className="text-sm text-right">- dwr.eth (Dan Romero)</p>
+              </div>
+              
+              <p className="text-muted-foreground mb-4">
+                This led to the fundamental question that sparked ViralWarp:
+              </p>
+              
+              <div className="border-l-4 border-warp-purple pl-4 my-6 py-2">
+                <p className="italic text-muted-foreground mb-2">
+                  "How do I grow my followers? Can I get a viral moment?"
+                </p>
+                <p className="text-sm text-right">- @508</p>
+              </div>
+              
+              <p className="text-muted-foreground">
+                That's when the idea struck: what if we could create a platform where Farcaster users could help each other grow? 
+                What if users with larger audiences could provide value to newer users, and be fairly compensated for their time and social capital?
+                ViralWarp was created to solve this exact problem - democratizing visibility on Farcaster and creating win-win opportunities 
+                for both established and emerging creators.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="mb-8">
+            <CardHeader>
               <CardTitle>What is ViralWarp?</CardTitle>
             </CardHeader>
             <CardContent>
@@ -80,6 +129,7 @@ const Docs: React.FC = () => {
               </ol>
               <p className="mt-4 text-muted-foreground">
                 Note: ViralWarp charges a 10% processing fee on all payments and withdrawals to maintain the platform.
+                This fee goes to @508, the creator of ViralWarp.
               </p>
             </CardContent>
           </Card>
