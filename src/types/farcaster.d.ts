@@ -21,9 +21,14 @@ interface CastOptions {
   parentCastId?: { fid: number; hash: string };
 }
 
+interface UserDetailOptions {
+  username: string;
+}
+
 interface FarcasterClient {
   loginUser: () => Promise<FarcasterResponse<FarcasterUser>>;
   postCast: (options: CastOptions) => Promise<FarcasterResponse<{ hash: string }>>;
+  fetchUserDetail?: (options: UserDetailOptions) => Promise<FarcasterResponse<FarcasterUser>>;
 }
 
 declare global {

@@ -44,7 +44,7 @@ const FoundingConversation: React.FC = () => {
       id: 4,
       user: "dwr.eth",
       avatar: "https://i.imgur.com/XqA1PDt.png",
-      content: "Consistency and engagement with others is the best way to grow followers.",
+      content: "Reply to people and Make friends",
       time: "20h",
       visible: false,
       link: "https://warpcast.com/dwr.eth/0xf9582cd5"

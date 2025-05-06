@@ -100,6 +100,12 @@ const verifyFollow = async (username: string, currentUserFid: number): Promise<b
     }
 
     // Get target user details by username
+    // Check if fetchUserDetail exists before trying to use it
+    if (!window.farcaster.fetchUserDetail) {
+      console.log("fetchUserDetail not available in Farcaster client");
+      return false;
+    }
+    
     const targetUserDetails = await window.farcaster.fetchUserDetail({ username });
     if (!targetUserDetails?.data) {
       return false;
