@@ -52,20 +52,16 @@ const FoundingConversation: React.FC = () => {
   ]);
 
   useEffect(() => {
-    // Reveal messages one by one
-    messages.forEach((message, index) => {
-      setTimeout(() => {
-        setMessages(prev => 
-          prev.map(msg => 
-            msg.id === message.id ? { ...msg, visible: true } : msg
-          )
-        );
-      }, 800 * (index + 1));
-    });
+    // Make all messages visible immediately
+    const timer = setTimeout(() => {
+      setMessages(messages.map(msg => ({ ...msg, visible: true })));
+    }, 300);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="rounded-lg overflow-hidden shadow-lg border border-border bg-card p-4 w-full max-w-3xl mx-auto">
+    <div className="rounded-lg overflow-hidden shadow-lg border border-border bg-card p-4 w-full max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-card-foreground/90">The Conversation That Started It All</h3>
         <div className="flex space-x-2">
@@ -75,43 +71,55 @@ const FoundingConversation: React.FC = () => {
         </div>
       </div>
       
-      <div className="flex flex-row overflow-x-auto gap-4 pb-4 hide-scrollbar">
-        {messages.map((message) => (
-          <a 
-            href={message.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            key={message.id}
-            className={`flex-shrink-0 w-72 transform transition-all duration-700 ${
-              message.visible 
-                ? 'translate-y-0 opacity-100' 
-                : 'translate-y-10 opacity-0'
-            } border border-border rounded-lg p-3 bg-card/50 hover:bg-card/80 transition-colors`}
-          >
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
-                <img src={message.avatar} alt={message.user} className="w-full h-full object-cover" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-foreground">{message.user}</span>
-                  <span className="text-muted-foreground text-sm">{message.time}</span>
+      <div className="flex flex-col space-y-4 mb-4">
+        {messages.map((message) => {
+          const isOwner = message.user === "508";
+          return (
+            <a 
+              href={message.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              key={message.id}
+              className={`transition-all duration-500 ${
+                message.visible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+              }`}
+            >
+              <div className={`flex ${isOwner ? 'justify-end' : 'justify-start'}`}>
+                <div className={`flex max-w-[80%] ${isOwner ? 'flex-row-reverse' : 'flex-row'}`}>
+                  <div className="flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                      <img src={message.avatar} alt={message.user} className="w-full h-full object-cover" />
+                    </div>
+                  </div>
+                  
+                  <div className={`mx-2 ${isOwner ? 'text-right' : 'text-left'}`}>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-bold text-foreground">{message.user}</span>
+                      <span className="text-muted-foreground text-xs">{message.time}</span>
+                    </div>
+                    
+                    <div className={`rounded-xl py-2 px-4 ${
+                      isOwner 
+                        ? 'bg-warp-purple/10 text-foreground rounded-tr-none' 
+                        : 'bg-muted/50 text-foreground rounded-tl-none'
+                    }`}>
+                      <p className="text-sm">{message.content}</p>
+                    </div>
+                    
+                    <div className="flex items-center mt-1 text-muted-foreground">
+                      <span className="mr-4 text-xs">💬 1</span>
+                      <span className="mr-4 text-xs">🔄</span>
+                      <span className="text-xs">❤️</span>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-card-foreground/90 mt-1 text-sm">{message.content}</p>
-                <div className="flex items-center mt-2 text-muted-foreground">
-                  <span className="mr-4 text-xs">💬 1</span>
-                  <span className="mr-4 text-xs">🔄</span>
-                  <span className="text-xs">❤️</span>
-                </div>
               </div>
-            </div>
-          </a>
-        ))}
+            </a>
+          );
+        })}
       </div>
       
-      <div className={`text-center mt-8 text-primary font-semibold transition-all duration-700 ${
-        messages[3].visible ? 'opacity-100' : 'opacity-0'
-      }`}>
+      <div className="text-center mt-8 text-primary font-semibold">
         And that's how ViralWarp was born...
       </div>
     </div>

@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import CastButton from '@/components/CastButton';
 
 const Header: React.FC = () => {
   return (
@@ -19,6 +21,12 @@ const Header: React.FC = () => {
               <Link to="/help">Help</Link>
             </Button>
             <ThemeToggle />
+            <CastButton 
+              url={window.location.origin} 
+              message="Check out ViralWarp - the ultimate growth platform for Farcaster!"
+              variant="ghost"
+              size="sm"
+            />
             <div className="flex items-center gap-2">
               <Button variant="outline" size="sm" asChild>
                 <Link to="/dashboard">Dashboard</Link>
