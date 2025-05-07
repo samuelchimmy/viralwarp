@@ -37,60 +37,35 @@ const Logo: React.FC<LogoProps> = ({ size = 'md', withText = true }) => {
           viewBox="0 0 200 200" 
           fill="none" 
           xmlns="http://www.w3.org/2000/svg"
-          className="transition-all duration-500 ease-out group-hover:scale-110"
+          className="transition-transform duration-300 ease-out group-hover:scale-110"
         >
-          {/* Rounded background with gradient */}
-          <defs>
-            <linearGradient id="purpleGradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#9B87F5"/>
-              <stop offset="100%" stopColor="#6E59A5"/>
-            </linearGradient>
-            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="8" result="blur"/>
-              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-            </filter>
-          </defs>
+          {/* Purple background */}
+          <rect width="200" height="200" rx="35" fill="#9B87F5"/>
           
-          {/* Rounded background */}
-          <rect width="200" height="200" rx="35" fill="url(#purpleGradient)"/>
-          
-          {/* Fluid W design */}
-          <path 
-            d="M50 50C60 90 70 100 80 70C90 40 95 90 100 120C105 150 110 100 120 70C130 40 140 90 150 50" 
-            stroke="white" 
-            strokeWidth="12" 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            filter="url(#glow)"
-            className="origin-center transition-all duration-300"
-          />
-          
-          {/* Sparkle effects */}
-          <circle cx="50" cy="50" r="4" fill="white" opacity="0.8" className="animate-pulse"/>
-          <circle cx="150" cy="50" r="4" fill="white" opacity="0.8" className="animate-pulse"/>
-          <circle cx="100" cy="130" r="4" fill="white" opacity="0.8" className="animate-pulse"/>
-          
-          {/* Abstract flame element */}
-          <path 
-            d="M160 60C175 85 160 110 160 130C140 110 150 85 130 70C150 75 155 65 160 60Z" 
-            fill="white" 
-            opacity="0.9"
-            className="origin-bottom animate-pulse"
-          />
-          
-          {/* Rising data points (arrow up abstract) */}
-          <path 
-            d="M30 140L45 120L60 130L75 100L90 110" 
-            stroke="white" 
-            strokeWidth="5" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          />
-          <circle cx="30" cy="140" r="3" fill="white"/>
-          <circle cx="45" cy="120" r="3" fill="white"/>
-          <circle cx="60" cy="130" r="3" fill="white"/>
-          <circle cx="75" cy="100" r="3" fill="white"/>
-          <circle cx="90" cy="110" r="3" fill="white"/>
+          {/* Stylized W with flame elements */}
+          <path d="M50 50
+                C60 90 65 110 80 75
+                C95 40 100 100 100 120
+                C100 140 105 100 120 75
+                C135 40 140 90 150 50" 
+                stroke="white" 
+                strokeWidth="14" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"/>
+                
+          {/* Additional flame details */}
+          <path d="M80 75C70 90 75 100 80 115C85 100 90 90 80 75Z" 
+                fill="white" 
+                opacity="0.8"/>
+          <path d="M120 75C110 90 115 100 120 115C125 100 130 90 120 75Z" 
+                fill="white" 
+                opacity="0.8"/>
+                
+          {/* Rising flame effect */}
+          <circle cx="65" cy="60" r="3" fill="white" opacity="0.6"/>
+          <circle cx="75" cy="55" r="2" fill="white" opacity="0.5"/>
+          <circle cx="135" cy="60" r="3" fill="white" opacity="0.6"/>
+          <circle cx="125" cy="55" r="2" fill="white" opacity="0.5"/>
         </svg>
       </div>
       
