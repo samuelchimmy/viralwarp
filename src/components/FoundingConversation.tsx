@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { ArrowLeft, MoreHorizontal, MessageSquare, Share } from "lucide-react";
@@ -197,7 +196,7 @@ const FoundingConversation: React.FC = () => {
       </div>
       
       <div className="text-center py-2 text-primary/80 font-semibold border-t border-gray-800 text-sm">
-        And that's how ViralWarp was born...
+        This conversation sparked the creation of ViralWarp
       </div>
     </div>
   );
