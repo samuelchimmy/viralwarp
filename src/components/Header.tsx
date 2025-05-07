@@ -4,14 +4,13 @@ import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import CastButton from '@/components/CastButton';
+import Logo from '@/components/Logo';
 
 const Header: React.FC = () => {
   return (
     <header className="bg-background border-b border-border py-4">
       <div className="container flex items-center justify-between">
-        <Link to="/" className="text-2xl font-bold">
-          ViralWarp
-        </Link>
+        <Logo size="md" withText={true} />
         <nav>
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" asChild>
