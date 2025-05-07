@@ -39,33 +39,34 @@ const Logo: React.FC<LogoProps> = ({ size = 'md', withText = true }) => {
           xmlns="http://www.w3.org/2000/svg"
           className="transition-transform duration-300 ease-out group-hover:scale-110"
         >
-          {/* Purple background */}
-          <rect width="200" height="200" rx="35" fill="#9B87F5"/>
+          {/* Background with improved gradient */}
+          <rect width="200" height="200" rx="35" fill="url(#logo-gradient)"/>
           
-          {/* Stylized W with flame elements */}
-          <path d="M50 50
-                C60 90 65 110 80 75
-                C95 40 100 100 100 120
-                C100 140 105 100 120 75
-                C135 40 140 90 150 50" 
-                stroke="white" 
-                strokeWidth="14" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"/>
+          {/* Flame styled "W" */}
+          <path d="M40 150
+                 C40 110 60 100 75 80
+                 C85 65 90 90 100 120
+                 C110 90 115 65 125 80
+                 C140 100 160 110 160 150
+                 L130 150
+                 C130 135 125 120 100 160
+                 C75 120 70 135 70 150
+                 L40 150Z" 
+                fill="white"/>
+          
+          {/* Top flame elements */}
+          <path d="M100 120
+                 C95 100 85 90 90 70
+                 C95 50 115 70 100 120Z" 
+                fill="white"/>
                 
-          {/* Additional flame details */}
-          <path d="M80 75C70 90 75 100 80 115C85 100 90 90 80 75Z" 
-                fill="white" 
-                opacity="0.8"/>
-          <path d="M120 75C110 90 115 100 120 115C125 100 130 90 120 75Z" 
-                fill="white" 
-                opacity="0.8"/>
-                
-          {/* Rising flame effect */}
-          <circle cx="65" cy="60" r="3" fill="white" opacity="0.6"/>
-          <circle cx="75" cy="55" r="2" fill="white" opacity="0.5"/>
-          <circle cx="135" cy="60" r="3" fill="white" opacity="0.6"/>
-          <circle cx="125" cy="55" r="2" fill="white" opacity="0.5"/>
+          {/* Gradient definition */}
+          <defs>
+            <linearGradient id="logo-gradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#9B87F5"/>
+              <stop offset="100%" stopColor="#7E69AB"/>
+            </linearGradient>
+          </defs>
         </svg>
       </div>
       
