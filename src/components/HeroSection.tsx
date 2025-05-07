@@ -49,10 +49,15 @@ const HeroSection: React.FC = () => {
           </div>
           
           <div className={`w-full transition-opacity duration-1000 ${showConversation ? 'opacity-100' : 'opacity-0'}`}>
-            <p className="text-center text-muted-foreground mb-4">
-              From a conversation to a movement — see how ViralWarp was born.
-            </p>
-            <FoundingConversation />
+            <div className="text-center mb-6">
+              <h2 className="text-2xl font-semibold mb-2">Our Origin Story</h2>
+              <p className="text-muted-foreground">
+                From a conversation to a movement — see how ViralWarp was born.
+              </p>
+            </div>
+            <div className="max-w-5xl mx-auto">
+              <FoundingConversation />
+            </div>
           </div>
         </div>
       </div>
