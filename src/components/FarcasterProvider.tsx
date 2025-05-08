@@ -25,6 +25,7 @@ type FarcasterContextType = {
   isAuthenticated: boolean;
   isAdmin: boolean;
   logout: () => void;
+  login: () => void;
   isReady: boolean;
 };
 
@@ -65,6 +66,15 @@ const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
     setIsReady(true);
   }, [user?.fid]);
 
+  const login = () => {
+    // This is a placeholder function that will be triggered by UI
+    // The actual authentication is handled by the FarcasterAuth component
+    toast({
+      title: "Authentication",
+      description: "Please complete the authentication process",
+    });
+  };
+
   const logout = () => {
     // AuthKit doesn't have a direct logout method, but we can handle UI state
     toast({
@@ -79,6 +89,7 @@ const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
     user,
     isAuthenticated: Boolean(isAuthenticated),
     isAdmin,
+    login,
     logout,
     isReady,
   };
