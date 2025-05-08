@@ -1,0 +1,22 @@
+
+{
+  "frame": {
+    "version": "1",
+    "name": "ViralWarp",
+    "iconUrl": "/lovable-uploads/2ecec6e0-a221-46f9-82f0-9e133409653e.png",
+    "homeUrl": "/",
+    "splashImageUrl": "/lovable-uploads/2ecec6e0-a221-46f9-82f0-9e133409653e.png",
+    "splashBackgroundColor": "#5D2E8C",
+    "subtitle": "Incentivized Farcaster Engagement",
+    "description": "Boost your Farcaster presence with ViralWarp - incentivized engagement platform for follows, recasts, likes and comments",
+    "primaryCategory": "social",
+    "tags": [
+      "growth",
+      "engagement",
+      "farcaster",
+      "earn",
+      "rewards"
+    ],
+    "heroImageUrl": "/lovable-uploads/2ecec6e0-a221-46f9-82f0-9e133409653e.png"
+  }
+}

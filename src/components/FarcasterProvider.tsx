@@ -1,3 +1,4 @@
+
 import React, {
   createContext,
   useState,
@@ -6,21 +7,23 @@ import React, {
   ReactNode,
 } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useProfile } from '@farcaster/auth-kit';
 
 interface FarcasterUser {
-  fid: number;
-  username: string;
+  fid?: number;
+  username?: string;
   displayName?: string;
   pfpUrl?: string;
   bio?: string;
   connectedAddress?: `0x${string}`;
+  verifications?: `0x${string}`[];
+  custody?: `0x${string}`;
 }
 
 type FarcasterContextType = {
   user: FarcasterUser | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
-  login: () => Promise<FarcasterUser | void>; // Modified to accept FarcasterUser or void
   logout: () => void;
   isReady: boolean;
 };
@@ -34,88 +37,48 @@ interface FarcasterProviderProps {
 }
 
 const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<FarcasterUser | null>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAuthenticated, profile } = useProfile();
   const [isReady, setIsReady] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
 
+  // Map profile from AuthKit to our app's user format
+  const user: FarcasterUser | null = isAuthenticated && profile ? {
+    fid: profile.fid,
+    username: profile.username,
+    displayName: profile.displayName,
+    pfpUrl: profile.pfpUrl,
+    bio: profile.bio,
+    custody: profile.custody,
+    verifications: profile.verifications
+  } : null;
+
+  // Check if user is admin
   useEffect(() => {
-    // Simulate checking localStorage or cookies for existing auth
-    const storedUser = localStorage.getItem("farcasterUser");
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser) as FarcasterUser;
-        setUser(parsedUser);
-        setIsAuthenticated(true);
-        setIsAdmin(parsedUser.fid === 508); // Example admin check
-      } catch (error) {
-        console.error("Error parsing stored user:", error);
-        localStorage.removeItem("farcasterUser"); // Clear invalid data
-      }
+    if (user?.fid) {
+      // Admin FIDs - add more as needed
+      const adminFids = [508]; // Example admin FID
+      setIsAdmin(adminFids.includes(user.fid));
+    } else {
+      setIsAdmin(false);
     }
-    setIsReady(true); // Mark provider as ready after attempting to restore session
-  }, []);
-
-  const login = async (): Promise<FarcasterUser | void> => {
-    try {
-      if (!window.farcaster) {
-        throw new Error("Farcaster client not available");
-      }
-
-      const authResponse = await window.farcaster.loginUser();
-
-      if (authResponse.success && authResponse.data) {
-        const { fid, username, displayName, pfpUrl } = authResponse.data;
-
-        const farcasterUser: FarcasterUser = {
-          fid,
-          username,
-          displayName,
-          pfpUrl,
-        };
-
-        setUser(farcasterUser);
-        setIsAuthenticated(true);
-        setIsAdmin(farcasterUser.fid === 508); // Example admin check
-        localStorage.setItem("farcasterUser", JSON.stringify(farcasterUser));
-
-        toast({
-          title: "Login Successful",
-          description: `Welcome, ${username}!`,
-        });
-
-        return farcasterUser;
-      } else {
-        throw new Error(authResponse.error || "Login failed");
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
-      toast({
-        title: "Login Failed",
-        description: "Could not connect to Farcaster",
-        variant: "destructive",
-      });
-    }
-  };
+    setIsReady(true);
+  }, [user?.fid]);
 
   const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
-    setIsAdmin(false);
-    localStorage.removeItem("farcasterUser");
-
+    // AuthKit doesn't have a direct logout method, but we can handle UI state
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
     });
+    // Force page refresh to clear auth state
+    window.location.href = "/";
   };
 
   const value = {
     user,
-    isAuthenticated,
+    isAuthenticated: Boolean(isAuthenticated),
     isAdmin,
-    login,
     logout,
     isReady,
   };

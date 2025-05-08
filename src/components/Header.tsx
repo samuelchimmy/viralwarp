@@ -5,8 +5,12 @@ import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import CastButton from '@/components/CastButton';
 import Logo from '@/components/Logo';
+import { FarcasterAuth, UserProfileDisplay } from '@/components/FarcasterAuth';
+import { useFarcaster } from '@/components/FarcasterProvider';
 
 const Header: React.FC = () => {
+  const { isAuthenticated, logout } = useFarcaster();
+
   return (
     <header className="bg-background border-b border-border py-4">
       <div className="container flex items-center justify-between">
@@ -26,14 +30,26 @@ const Header: React.FC = () => {
               variant="ghost"
               size="sm"
             />
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/dashboard">Dashboard</Link>
-              </Button>
-              <Button asChild>
-                <Link to="/create">Create Request</Link>
-              </Button>
-            </div>
+            
+            {isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <UserProfileDisplay />
+                <Button variant="outline" size="sm" onClick={logout}>Logout</Button>
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/dashboard">Dashboard</Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/create">Create Request</Link>
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <FarcasterAuth />
+                <Button variant="outline" size="sm" asChild>
+                  <Link to="/browse">Browse</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </nav>
       </div>
