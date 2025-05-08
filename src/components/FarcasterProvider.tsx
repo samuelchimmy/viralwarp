@@ -7,7 +7,33 @@ import React, {
   ReactNode,
 } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useProfile } from '@farcaster/auth-kit';
+
+// We're importing useProfile, but need to handle the case if it's not available yet
+let useProfile: () => {
+  isAuthenticated: boolean;
+  profile?: {
+    fid?: number;
+    username?: string;
+    displayName?: string;
+    pfpUrl?: string;
+    bio?: string;
+    custody?: `0x${string}`;
+    verifications?: `0x${string}`[];
+  };
+};
+
+// Attempt to import from @farcaster/auth-kit, but provide a fallback
+try {
+  const authKit = require('@farcaster/auth-kit');
+  useProfile = authKit.useProfile;
+} catch (error) {
+  console.error("Failed to load @farcaster/auth-kit:", error);
+  // Provide a mock implementation
+  useProfile = () => ({
+    isAuthenticated: false,
+    profile: undefined
+  });
+}
 
 interface FarcasterUser {
   fid?: number;

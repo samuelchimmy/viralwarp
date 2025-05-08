@@ -2,8 +2,34 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
-import { AuthKitProvider, SignInButton, useProfile } from '@farcaster/auth-kit';
-import '@farcaster/auth-kit/styles.css';
+import { Button } from "@/components/ui/button";
+
+// Use dynamic imports with error handling
+let AuthKitProvider: React.FC<any>;
+let SignInButton: React.FC<any>;
+let useProfile: () => any;
+
+try {
+  const authKit = require('@farcaster/auth-kit');
+  AuthKitProvider = authKit.AuthKitProvider;
+  SignInButton = authKit.SignInButton;
+  useProfile = authKit.useProfile;
+  
+  // Also try to import styles
+  try {
+    require('@farcaster/auth-kit/styles.css');
+  } catch (e) {
+    console.warn("Could not load @farcaster/auth-kit styles:", e);
+  }
+  
+} catch (error) {
+  console.error("Failed to load @farcaster/auth-kit:", error);
+  
+  // Provide mock components if imports fail
+  AuthKitProvider = ({ children }) => <>{children}</>;
+  SignInButton = () => <Button>Sign in with Farcaster (unavailable)</Button>;
+  useProfile = () => ({ isAuthenticated: false, profile: null });
+}
 
 // Configure AuthKit
 const authConfig = {
@@ -60,6 +86,7 @@ export const FarcasterAuth: React.FC<FarcasterAuthProps> = ({ onSuccess }) => {
   };
 
   const handleError = (error: any) => {
+    console.error("Login failed:", error);
     toast({
       title: "Connection failed",
       description: error?.message || "Could not connect to Farcaster",
