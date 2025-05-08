@@ -1,31 +1,47 @@
 
 <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background with improved gradient -->
-  <rect width="200" height="200" rx="35" fill="url(#logo-gradient)"/>
+  <!-- Purple background -->
+  <rect width="200" height="200" rx="35" fill="#5D2E8C"/>
   
-  <!-- Flame styled "W" -->
-  <path d="M40 150
-           C40 110 60 100 75 80
-           C85 65 90 90 100 120
-           C110 90 115 65 125 80
-           C140 100 160 110 160 150
-           L130 150
-           C130 135 125 120 100 160
-           C75 120 70 135 70 150
-           L40 150Z" 
-        fill="white"/>
+  <!-- White "V" shape -->
+  <path d="M100 140 
+           L50 50 
+           L65 50 
+           L100 110 
+           L135 50 
+           L150 50 
+           L100 140Z" 
+        fill="white" 
+        filter="drop-shadow(0px 2px 3px rgba(0,0,0,0.2))"/>
   
-  <!-- Top flame elements -->
-  <path d="M100 120
-           C95 100 85 90 90 70
-           C95 50 115 70 100 120Z" 
-        fill="white"/>
-        
-  <!-- Gradient definition -->
+  <!-- Left flame element -->
+  <path d="M82 120
+           C72 100 62 105 67 85
+           C72 65 62 80 57 70
+           C52 95 62 105 77 125
+           C79 128 84 130 82 120Z" 
+        fill="url(#flame-gradient)"/>
+  
+  <!-- Right flame element -->
+  <path d="M118 120
+           C128 100 138 105 133 85
+           C128 65 138 80 143 70
+           C148 95 138 105 123 125
+           C121 128 116 130 118 120Z" 
+        fill="url(#flame-gradient)"/>
+  
+  <!-- Center flame element -->
+  <path d="M100 100
+           C95 80 105 70 100 50
+           C95 70 90 65 95 85
+           C100 95 105 90 100 100Z" 
+        fill="url(#flame-gradient)"/>
+  
+  <!-- Gradient definitions -->
   <defs>
-    <linearGradient id="logo-gradient" x1="0" y1="0" x2="200" y2="200" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#9B87F5"/>
-      <stop offset="100%" stop-color="#7E69AB"/>
+    <linearGradient id="flame-gradient" x1="100" y1="50" x2="100" y2="130" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFA500"/>
+      <stop offset="100%" stop-color="#FF4500"/>
     </linearGradient>
   </defs>
 </svg>
