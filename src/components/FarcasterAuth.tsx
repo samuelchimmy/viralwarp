@@ -10,41 +10,39 @@ const AuthKitProviderFallback: React.FC<{children: React.ReactNode; config?: any
 const SignInButtonFallback: React.FC<any> = () => <Button>Sign in with Farcaster</Button>;
 const useProfileFallback = () => ({ isAuthenticated: false, profile: null });
 
-// Dynamic imports with state management
+// Static imports for AuthKit components
 let AuthKitProvider = AuthKitProviderFallback;
 let SignInButton = SignInButtonFallback; 
 let useProfile = useProfileFallback;
 
-// Initialize Frame SDK when the application loads
+// Initialize Frame SDK when the component mounts
 const initializeFrameSDK = async () => {
   try {
-    // Initialize Frame SDK
     await sdk.actions.ready();
     console.log("Farcaster Frame SDK initialized successfully");
+    return true;
   } catch (error) {
     console.error("Failed to initialize Frame SDK:", error);
+    return false;
   }
 };
 
-// Attempt to dynamically import auth-kit
-useEffect(() => {
-  import('@farcaster/auth-kit')
-    .then((authKit) => {
-      AuthKitProvider = authKit.AuthKitProvider;
-      SignInButton = authKit.SignInButton;
-      useProfile = authKit.useProfile;
-      
-      // Also try to import styles
-      import('@farcaster/auth-kit/styles.css')
-        .catch(e => console.warn("Could not load @farcaster/auth-kit styles:", e));
-    })
-    .catch(error => {
-      console.error("Failed to load @farcaster/auth-kit:", error);
-    });
+// Load AuthKit dynamically
+try {
+  import('@farcaster/auth-kit').then(authKit => {
+    AuthKitProvider = authKit.AuthKitProvider;
+    SignInButton = authKit.SignInButton;
+    useProfile = authKit.useProfile;
     
-  // Initialize the Frame SDK
-  initializeFrameSDK();
-}, []);
+    // Also try to import styles
+    import('@farcaster/auth-kit/styles.css')
+      .catch(e => console.warn("Could not load @farcaster/auth-kit styles:", e));
+  }).catch(error => {
+    console.error("Failed to load @farcaster/auth-kit:", error);
+  });
+} catch (error) {
+  console.error("Failed to load @farcaster/auth-kit:", error);
+}
 
 // Configure AuthKit
 const authConfig = {
@@ -86,6 +84,11 @@ export const FarcasterAuth: React.FC<FarcasterAuthProps> = ({ onSuccess }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Initialize Frame SDK on component mount
+  useEffect(() => {
+    initializeFrameSDK();
+  }, []);
+
   const handleSuccess = (data: any) => {
     toast({
       title: "Successfully connected",
@@ -123,6 +126,11 @@ interface FarcasterAuthProviderProps {
 }
 
 export const FarcasterAuthProvider: React.FC<FarcasterAuthProviderProps> = ({ children }) => {
+  // Initialize Frame SDK when the application mounts
+  useEffect(() => {
+    initializeFrameSDK();
+  }, []);
+
   return (
     <AuthKitProvider config={authConfig}>
       {children}
@@ -130,4 +138,5 @@ export const FarcasterAuthProvider: React.FC<FarcasterAuthProviderProps> = ({ ch
   );
 };
 
+export { useProfile };
 export default FarcasterAuth;

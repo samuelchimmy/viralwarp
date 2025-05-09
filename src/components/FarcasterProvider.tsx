@@ -8,38 +8,7 @@ import React, {
 } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAccount } from 'wagmi';
-
-// Define fallback profile hook for when AuthKit is not available
-const createFallbackProfileHook = () => () => ({
-  isAuthenticated: false,
-  profile: undefined
-});
-
-// Attempt to import from auth-kit with fallback
-let useProfile: () => {
-  isAuthenticated: boolean;
-  profile?: {
-    fid?: number;
-    username?: string;
-    displayName?: string;
-    pfpUrl?: string;
-    bio?: string;
-    custody?: `0x${string}`;
-    verifications?: `0x${string}`[];
-  };
-} = createFallbackProfileHook();
-
-// Dynamically import auth-kit
-try {
-  // Dynamic import in modern syntax
-  import('@farcaster/auth-kit').then(authKit => {
-    useProfile = authKit.useProfile;
-  }).catch(error => {
-    console.error("Failed to load @farcaster/auth-kit:", error);
-  });
-} catch (error) {
-  console.error("Failed to load @farcaster/auth-kit:", error);
-}
+import { useProfile } from './FarcasterAuth';
 
 interface FarcasterUser {
   fid?: number;
@@ -47,9 +16,9 @@ interface FarcasterUser {
   displayName?: string;
   pfpUrl?: string;
   bio?: string;
-  connectedAddress?: `0x${string}`;
-  verifications?: `0x${string}`[];
-  custody?: `0x${string}`;
+  connectedAddress?: string;
+  verifications?: string[];
+  custody?: string;
 }
 
 type FarcasterContextType = {
@@ -96,9 +65,9 @@ const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
     displayName: profile.displayName,
     pfpUrl: profile.pfpUrl,
     bio: profile.bio,
-    custody: profile.custody,
-    verifications: profile.verifications,
-    connectedAddress: walletAddress as `0x${string}` || undefined
+    custody: profile.custody ? String(profile.custody) : undefined,
+    verifications: profile.verifications ? profile.verifications.map(v => String(v)) : undefined,
+    connectedAddress: walletAddress || undefined
   } : null;
 
   // Check if user is admin

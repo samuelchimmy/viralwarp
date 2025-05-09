@@ -20,8 +20,8 @@ import { FarcasterAuthProvider } from "./components/FarcasterAuth";
 import { useEffect } from "react";
 import { sdk } from '@farcaster/frame-sdk';
 
-// Initialize Frame SDK
-const initFrameSDK = () => {
+// FrameInitializer component to initialize the SDK
+const FrameInitializer = () => {
   useEffect(() => {
     const initialize = async () => {
       try {
@@ -37,8 +37,6 @@ const initFrameSDK = () => {
   
   return null;
 };
-
-const FrameInitializer = initFrameSDK();
 
 const queryClient = new QueryClient();
 
