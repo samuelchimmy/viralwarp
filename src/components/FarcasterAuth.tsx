@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { sdk } from '@farcaster/frame-sdk';
 
 // Use dynamic imports with error handling
 let AuthKitProvider: React.FC<any>;
@@ -62,6 +63,17 @@ export const UserProfileDisplay: React.FC = () => {
   );
 };
 
+// Initialize SDK when app loads
+const initializeFrameSDK = async () => {
+  try {
+    // Initialize Frame SDK
+    await sdk.actions.ready();
+    console.log("Farcaster Frame SDK initialized successfully");
+  } catch (error) {
+    console.error("Failed to initialize Frame SDK:", error);
+  }
+};
+
 // Main FarcasterAuth component
 interface FarcasterAuthProps {
   onSuccess?: (data: any) => void;
@@ -70,6 +82,11 @@ interface FarcasterAuthProps {
 export const FarcasterAuth: React.FC<FarcasterAuthProps> = ({ onSuccess }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    // Initialize the SDK when auth component mounts
+    initializeFrameSDK();
+  }, []);
 
   const handleSuccess = (data: any) => {
     toast({

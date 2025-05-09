@@ -53,6 +53,8 @@ type FarcasterContextType = {
   logout: () => void;
   login: () => void;
   isReady: boolean;
+  walletAddress: string | null;
+  setWalletAddress: (address: string | null) => void;
 };
 
 const FarcasterContext = createContext<FarcasterContextType | undefined>(
@@ -67,6 +69,7 @@ const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
   const { isAuthenticated, profile } = useProfile();
   const [isReady, setIsReady] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Map profile from AuthKit to our app's user format
@@ -77,7 +80,8 @@ const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
     pfpUrl: profile.pfpUrl,
     bio: profile.bio,
     custody: profile.custody,
-    verifications: profile.verifications
+    verifications: profile.verifications,
+    connectedAddress: walletAddress as `0x${string}` || undefined
   } : null;
 
   // Check if user is admin
@@ -107,6 +111,8 @@ const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
       title: "Logged Out",
       description: "You have been successfully logged out.",
     });
+    // Clear wallet address when logging out
+    setWalletAddress(null);
     // Force page refresh to clear auth state
     window.location.href = "/";
   };
@@ -118,6 +124,8 @@ const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
     login,
     logout,
     isReady,
+    walletAddress,
+    setWalletAddress
   };
 
   return (

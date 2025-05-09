@@ -7,6 +7,7 @@ import CastButton from '@/components/CastButton';
 import Logo from '@/components/Logo';
 import { FarcasterAuth, UserProfileDisplay } from '@/components/FarcasterAuth';
 import { useFarcaster } from '@/components/FarcasterProvider';
+import WalletConnector from '@/components/WalletConnector';
 
 const Header: React.FC = () => {
   const { isAuthenticated, logout } = useFarcaster();
@@ -34,6 +35,7 @@ const Header: React.FC = () => {
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
                 <UserProfileDisplay />
+                <WalletConnector />
                 <Button variant="outline" size="sm" onClick={logout}>Logout</Button>
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/dashboard">Dashboard</Link>
