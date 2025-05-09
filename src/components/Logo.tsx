@@ -30,9 +30,9 @@ const Logo: React.FC<LogoProps> = ({ size = 'md', withText = true }) => {
   return (
     <Link to="/" className="flex items-center gap-2 group">
       <div className={`relative ${sizeMap[size].containerClass} flex items-center justify-center overflow-visible`}>
-        {/* Use the uploaded image directly */}
+        {/* Use the new uploaded image */}
         <img
-          src="/lovable-uploads/2ecec6e0-a221-46f9-82f0-9e133409653e.png"
+          src="/lovable-uploads/2fcbbcf6-6ddd-427d-b46f-53b602fbf2d0.png"
           alt="ViralWarp Logo"
           className="w-full h-full object-contain transition-transform duration-300 ease-out group-hover:scale-110"
         />
