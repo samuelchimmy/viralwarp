@@ -17,6 +17,28 @@ import Help from "./pages/Help";
 import { FarcasterProvider } from "./components/FarcasterProvider";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { FarcasterAuthProvider } from "./components/FarcasterAuth";
+import { useEffect } from "react";
+import { sdk } from '@farcaster/frame-sdk';
+
+// Initialize Frame SDK
+const initFrameSDK = () => {
+  useEffect(() => {
+    const initialize = async () => {
+      try {
+        await sdk.actions.ready();
+        console.log("Farcaster Frame SDK initialized successfully");
+      } catch (error) {
+        console.error("Failed to initialize Frame SDK:", error);
+      }
+    };
+    
+    initialize();
+  }, []);
+  
+  return null;
+};
+
+const FrameInitializer = initFrameSDK();
 
 const queryClient = new QueryClient();
 
@@ -26,6 +48,7 @@ const App = () => (
       <FarcasterProvider>
         <ThemeProvider defaultTheme="dark" storageKey="viralwarp-theme">
           <TooltipProvider>
+            <FrameInitializer />
             <Toaster />
             <Sonner />
             <BrowserRouter>

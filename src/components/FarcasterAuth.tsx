@@ -5,32 +5,46 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { sdk } from '@farcaster/frame-sdk';
 
-// Use dynamic imports with error handling
-let AuthKitProvider: React.FC<any>;
-let SignInButton: React.FC<any>;
-let useProfile: () => any;
+// Create placeholder components in case auth-kit fails to load
+const AuthKitProviderFallback: React.FC<{children: React.ReactNode; config?: any}> = ({ children }) => <>{children}</>;
+const SignInButtonFallback: React.FC<any> = () => <Button>Sign in with Farcaster</Button>;
+const useProfileFallback = () => ({ isAuthenticated: false, profile: null });
 
-try {
-  const authKit = require('@farcaster/auth-kit');
-  AuthKitProvider = authKit.AuthKitProvider;
-  SignInButton = authKit.SignInButton;
-  useProfile = authKit.useProfile;
-  
-  // Also try to import styles
+// Dynamic imports with state management
+let AuthKitProvider = AuthKitProviderFallback;
+let SignInButton = SignInButtonFallback; 
+let useProfile = useProfileFallback;
+
+// Initialize Frame SDK when the application loads
+const initializeFrameSDK = async () => {
   try {
-    require('@farcaster/auth-kit/styles.css');
-  } catch (e) {
-    console.warn("Could not load @farcaster/auth-kit styles:", e);
+    // Initialize Frame SDK
+    await sdk.actions.ready();
+    console.log("Farcaster Frame SDK initialized successfully");
+  } catch (error) {
+    console.error("Failed to initialize Frame SDK:", error);
   }
-  
-} catch (error) {
-  console.error("Failed to load @farcaster/auth-kit:", error);
-  
-  // Provide mock components if imports fail
-  AuthKitProvider = ({ children }) => <>{children}</>;
-  SignInButton = () => <Button>Sign in with Farcaster (unavailable)</Button>;
-  useProfile = () => ({ isAuthenticated: false, profile: null });
-}
+};
+
+// Attempt to dynamically import auth-kit
+useEffect(() => {
+  import('@farcaster/auth-kit')
+    .then((authKit) => {
+      AuthKitProvider = authKit.AuthKitProvider;
+      SignInButton = authKit.SignInButton;
+      useProfile = authKit.useProfile;
+      
+      // Also try to import styles
+      import('@farcaster/auth-kit/styles.css')
+        .catch(e => console.warn("Could not load @farcaster/auth-kit styles:", e));
+    })
+    .catch(error => {
+      console.error("Failed to load @farcaster/auth-kit:", error);
+    });
+    
+  // Initialize the Frame SDK
+  initializeFrameSDK();
+}, []);
 
 // Configure AuthKit
 const authConfig = {
@@ -63,17 +77,6 @@ export const UserProfileDisplay: React.FC = () => {
   );
 };
 
-// Initialize SDK when app loads
-const initializeFrameSDK = async () => {
-  try {
-    // Initialize Frame SDK
-    await sdk.actions.ready();
-    console.log("Farcaster Frame SDK initialized successfully");
-  } catch (error) {
-    console.error("Failed to initialize Frame SDK:", error);
-  }
-};
-
 // Main FarcasterAuth component
 interface FarcasterAuthProps {
   onSuccess?: (data: any) => void;
@@ -82,11 +85,6 @@ interface FarcasterAuthProps {
 export const FarcasterAuth: React.FC<FarcasterAuthProps> = ({ onSuccess }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  
-  useEffect(() => {
-    // Initialize the SDK when auth component mounts
-    initializeFrameSDK();
-  }, []);
 
   const handleSuccess = (data: any) => {
     toast({

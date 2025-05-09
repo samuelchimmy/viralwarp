@@ -7,8 +7,15 @@ import React, {
   ReactNode,
 } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAccount } from 'wagmi';
 
-// We're importing useProfile, but need to handle the case if it's not available yet
+// Define fallback profile hook for when AuthKit is not available
+const createFallbackProfileHook = () => () => ({
+  isAuthenticated: false,
+  profile: undefined
+});
+
+// Attempt to import from auth-kit with fallback
 let useProfile: () => {
   isAuthenticated: boolean;
   profile?: {
@@ -20,19 +27,18 @@ let useProfile: () => {
     custody?: `0x${string}`;
     verifications?: `0x${string}`[];
   };
-};
+} = createFallbackProfileHook();
 
-// Attempt to import from @farcaster/auth-kit, but provide a fallback
+// Dynamically import auth-kit
 try {
-  const authKit = require('@farcaster/auth-kit');
-  useProfile = authKit.useProfile;
+  // Dynamic import in modern syntax
+  import('@farcaster/auth-kit').then(authKit => {
+    useProfile = authKit.useProfile;
+  }).catch(error => {
+    console.error("Failed to load @farcaster/auth-kit:", error);
+  });
 } catch (error) {
   console.error("Failed to load @farcaster/auth-kit:", error);
-  // Provide a mock implementation
-  useProfile = () => ({
-    isAuthenticated: false,
-    profile: undefined
-  });
 }
 
 interface FarcasterUser {
@@ -66,11 +72,22 @@ interface FarcasterProviderProps {
 }
 
 const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
+  // Get authentication state from AuthKit
   const { isAuthenticated, profile } = useProfile();
   const [isReady, setIsReady] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const { toast } = useToast();
+  
+  // Get wallet connection from wagmi
+  const { address } = useAccount();
+  
+  // Update wallet address when wagmi address changes
+  useEffect(() => {
+    if (address) {
+      setWalletAddress(address);
+    }
+  }, [address]);
 
   // Map profile from AuthKit to our app's user format
   const user: FarcasterUser | null = isAuthenticated && profile ? {

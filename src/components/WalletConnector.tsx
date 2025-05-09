@@ -2,38 +2,29 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { sdk } from '@farcaster/frame-sdk';
 import { Wallet } from 'lucide-react';
 import { useFarcaster } from './FarcasterProvider';
+import { useAccount, useConnect } from 'wagmi';
 
 interface WalletConnectorProps {
   onConnect?: (address: string) => void;
 }
 
 const WalletConnector: React.FC<WalletConnectorProps> = ({ onConnect }) => {
-  const [address, setAddress] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const { toast } = useToast();
   const { isAuthenticated } = useFarcaster();
+  
+  // Use wagmi hooks for wallet connection
+  const { address, isConnected } = useAccount();
+  const { connect, connectors, isPending } = useConnect();
 
+  // Update parent component when connection status changes
   useEffect(() => {
-    // Check if wallet is already connected when component mounts
-    const checkWalletConnection = async () => {
-      try {
-        if (sdk.wallet && sdk.wallet.ethProvider) {
-          const accounts = await sdk.wallet.ethProvider.request({ method: 'eth_accounts' });
-          if (accounts && accounts.length > 0) {
-            setAddress(accounts[0]);
-            onConnect?.(accounts[0]);
-          }
-        }
-      } catch (error) {
-        console.error('Error checking wallet connection:', error);
-      }
-    };
-    
-    checkWalletConnection();
-  }, [onConnect]);
+    if (isConnected && address && onConnect) {
+      onConnect(address);
+    }
+  }, [isConnected, address, onConnect]);
 
   const connectWallet = async () => {
     if (!isAuthenticated) {
@@ -48,25 +39,11 @@ const WalletConnector: React.FC<WalletConnectorProps> = ({ onConnect }) => {
     try {
       setIsConnecting(true);
       
-      if (!sdk.wallet || !sdk.wallet.ethProvider) {
-        throw new Error("Wallet provider not available");
-      }
-
-      const accounts = await sdk.wallet.ethProvider.request({ 
-        method: 'eth_requestAccounts' 
-      });
-      
-      if (accounts && accounts.length > 0) {
-        const connectedAddress = accounts[0];
-        setAddress(connectedAddress);
-        toast({
-          title: "Wallet Connected",
-          description: `Connected to ${connectedAddress.substring(0, 6)}...${connectedAddress.substring(connectedAddress.length - 4)}`
-        });
-        
-        if (onConnect) {
-          onConnect(connectedAddress);
-        }
+      // Connect using the farcasterFrame connector
+      if (connectors.length > 0) {
+        connect({ connector: connectors[0] });
+      } else {
+        throw new Error("No connectors available");
       }
     } catch (error: any) {
       console.error('Error connecting wallet:', error);
@@ -81,7 +58,7 @@ const WalletConnector: React.FC<WalletConnectorProps> = ({ onConnect }) => {
   };
 
   const handleClick = () => {
-    if (address) {
+    if (isConnected && address) {
       // If already connected, show address
       toast({
         title: "Wallet Connected",
@@ -97,14 +74,14 @@ const WalletConnector: React.FC<WalletConnectorProps> = ({ onConnect }) => {
     <Button 
       variant="outline" 
       size="sm" 
-      className={address ? "border-green-500 text-green-500" : ""}
-      disabled={isConnecting || !isAuthenticated}
+      className={isConnected ? "border-green-500 text-green-500" : ""}
+      disabled={isConnecting || !isAuthenticated || isPending}
       onClick={handleClick}
     >
       <Wallet className="mr-2 h-4 w-4" />
-      {address 
+      {isConnected && address 
         ? `${address.substring(0, 6)}...${address.substring(address.length - 4)}`
-        : isConnecting 
+        : isPending || isConnecting
           ? "Connecting..." 
           : "Connect Wallet"
       }

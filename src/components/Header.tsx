@@ -10,7 +10,11 @@ import { useFarcaster } from '@/components/FarcasterProvider';
 import WalletConnector from '@/components/WalletConnector';
 
 const Header: React.FC = () => {
-  const { isAuthenticated, logout } = useFarcaster();
+  const { isAuthenticated, logout, setWalletAddress } = useFarcaster();
+
+  const handleWalletConnect = (address: string) => {
+    setWalletAddress(address);
+  };
 
   return (
     <header className="bg-background border-b border-border py-4">
@@ -35,7 +39,7 @@ const Header: React.FC = () => {
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
                 <UserProfileDisplay />
-                <WalletConnector />
+                <WalletConnector onConnect={handleWalletConnect} />
                 <Button variant="outline" size="sm" onClick={logout}>Logout</Button>
                 <Button variant="outline" size="sm" asChild>
                   <Link to="/dashboard">Dashboard</Link>
