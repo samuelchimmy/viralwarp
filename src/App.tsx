@@ -43,13 +43,13 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <FarcasterAuthProvider>
-      <FarcasterProvider>
-        <ThemeProvider defaultTheme="dark" storageKey="viralwarp-theme">
-          <TooltipProvider>
-            <FrameInitializer />
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+      <ThemeProvider defaultTheme="dark" storageKey="viralwarp-theme">
+        <TooltipProvider>
+          <FrameInitializer />
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <FarcasterProvider>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/create" element={<CreateRequest />} />
@@ -62,10 +62,10 @@ const App = () => (
                 <Route path="/help" element={<Help />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </ThemeProvider>
-      </FarcasterProvider>
+            </FarcasterProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
     </FarcasterAuthProvider>
   </QueryClientProvider>
 );
