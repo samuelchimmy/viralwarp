@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@civic/auth": "^0.5.4",
     "@farcaster/auth-kit": "^0.6.0",
     "@farcaster/frame-wagmi-connector": "^0.0.26",
     "@hookform/resolvers": "^3.9.0",
@@ -47,6 +48,7 @@
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
+    "ethers": "^6.14.0",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",

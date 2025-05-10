@@ -17,6 +17,7 @@ import Help from "./pages/Help";
 import { FarcasterProvider } from "./components/FarcasterProvider";
 import { ThemeProvider } from "./components/ThemeProvider";
 import { FarcasterAuthProvider } from "./components/FarcasterAuth";
+import { CivicAuthRoot } from "./components/CivicAuthProvider";
 import { useEffect } from "react";
 import { sdk } from '@farcaster/frame-sdk';
 
@@ -43,29 +44,32 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <FarcasterAuthProvider>
-      <ThemeProvider defaultTheme="dark" storageKey="viralwarp-theme">
-        <TooltipProvider>
-          <FrameInitializer />
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <FarcasterProvider>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/create" element={<CreateRequest />} />
-                <Route path="/browse" element={<BrowseRequests />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/request/:id" element={<RequestDetail />} />
-                <Route path="/docs" element={<Docs />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/help" element={<Help />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </FarcasterProvider>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
+      <CivicAuthRoot>
+        <ThemeProvider defaultTheme="dark" storageKey="viralwarp-theme">
+          <TooltipProvider>
+            <FrameInitializer />
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <FarcasterProvider>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/create" element={<CreateRequest />} />
+                  <Route path="/browse" element={<BrowseRequests />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/request/:id" element={<RequestDetail />} />
+                  <Route path="/docs" element={<Docs />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/help" element={<Help />} />
+                  <Route path="/profile" element={<Dashboard />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </FarcasterProvider>
+            </BrowserRouter>
+          </TooltipProvider>
+        </ThemeProvider>
+      </CivicAuthRoot>
     </FarcasterAuthProvider>
   </QueryClientProvider>
 );
