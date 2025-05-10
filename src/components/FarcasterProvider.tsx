@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useAccount } from 'wagmi';
-import { useProfile } from './FarcasterAuth';
 
 interface FarcasterUser {
   fid?: number;
@@ -41,9 +40,9 @@ interface FarcasterProviderProps {
 }
 
 const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
-  // Get authentication state from AuthKit
-  const { isAuthenticated, profile } = useProfile();
-  const [isReady, setIsReady] = useState(false);
+  // Since we're focusing on Civic Auth, we'll set these to false/null
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isReady, setIsReady] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const { toast } = useToast();
@@ -58,54 +57,27 @@ const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
     }
   }, [address]);
 
-  // Map profile from AuthKit to our app's user format
-  const user: FarcasterUser | null = isAuthenticated && profile ? {
-    fid: profile.fid,
-    username: profile.username,
-    displayName: profile.displayName,
-    pfpUrl: profile.pfpUrl,
-    bio: profile.bio,
-    custody: profile.custody ? String(profile.custody) : undefined,
-    verifications: profile.verifications ? profile.verifications.map(v => String(v)) : undefined,
-    connectedAddress: walletAddress || undefined
-  } : null;
-
-  // Check if user is admin
-  useEffect(() => {
-    if (user?.fid) {
-      // Admin FIDs - add more as needed
-      const adminFids = [508]; // Example admin FID
-      setIsAdmin(adminFids.includes(user.fid));
-    } else {
-      setIsAdmin(false);
-    }
-    setIsReady(true);
-  }, [user?.fid]);
+  // Simple mock user for development
+  const user: FarcasterUser | null = null;
 
   const login = () => {
-    // This is a placeholder function that will be triggered by UI
-    // The actual authentication is handled by the FarcasterAuth component
     toast({
       title: "Authentication",
-      description: "Please complete the authentication process",
+      description: "Farcaster Auth is disabled. Please use Civic Auth instead.",
     });
   };
 
   const logout = () => {
-    // AuthKit doesn't have a direct logout method, but we can handle UI state
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
     });
-    // Clear wallet address when logging out
     setWalletAddress(null);
-    // Force page refresh to clear auth state
-    window.location.href = "/";
   };
 
   const value = {
     user,
-    isAuthenticated: Boolean(isAuthenticated),
+    isAuthenticated,
     isAdmin,
     login,
     logout,

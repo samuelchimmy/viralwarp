@@ -53,49 +53,22 @@ let AuthKitProvider = AuthKitProviderFallback;
 let SignInButton = SignInButtonFallback; 
 let useProfile = useProfileFallback;
 
-// Load AuthKit dynamically
-try {
-  import('@farcaster/auth-kit').then(authKit => {
-    AuthKitProvider = authKit.AuthKitProvider;
-    SignInButton = authKit.SignInButton;
-    useProfile = authKit.useProfile;
-    
-    // Also try to import styles
-    import('@farcaster/auth-kit/styles.css')
-      .catch(e => console.warn("Could not load @farcaster/auth-kit styles:", e));
-  }).catch(error => {
-    console.error("Failed to load @farcaster/auth-kit:", error);
-  });
-} catch (error) {
-  console.error("Failed to load @farcaster/auth-kit:", error);
-}
-
-// Configure AuthKit
+// Configure AuthKit - but don't load the actual library
+// since we're focusing on Civic Auth for now
 const authConfig = {
   domain: window.location.host,
   siweUri: `${window.location.origin}/login`,
-  rpcUrl: 'https://mainnet.optimism.io',
-  relay: 'https://relay.farcaster.xyz',
 };
 
 // User profile display component
 export const UserProfileDisplay: React.FC = () => {
-  const { isAuthenticated, profile } = useProfile();
-  
-  if (!isAuthenticated || !profile) return null;
+  const profile = { username: null, pfpUrl: null, displayName: null };
   
   return (
     <div className="flex items-center gap-2">
-      {profile.pfpUrl && (
-        <img
-          src={profile.pfpUrl}
-          alt={profile.username || 'User'}
-          className="w-8 h-8 rounded-full object-cover"
-        />
-      )}
       <div className="text-sm">
-        <p className="font-medium">{profile.displayName || profile.username}</p>
-        {profile.username && <p className="text-muted-foreground">@{profile.username}</p>}
+        <p className="font-medium">Farcaster Auth Disabled</p>
+        <p className="text-muted-foreground">Using Civic Auth</p>
       </div>
     </div>
   );
@@ -110,39 +83,18 @@ export const FarcasterAuth: React.FC<FarcasterAuthProps> = ({ onSuccess }) => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Initialize Frame SDK on component mount
-  useEffect(() => {
-    initializeFrameSDK();
-  }, []);
-
-  const handleSuccess = (data: any) => {
+  // Show a disabled message
+  const handleClick = () => {
     toast({
-      title: "Successfully connected",
-      description: `Welcome, ${data.username || 'user'}!`,
-    });
-    
-    if (onSuccess) {
-      onSuccess(data);
-    }
-    
-    // Redirect to dashboard or home after successful login
-    navigate('/dashboard');
-  };
-
-  const handleError = (error: any) => {
-    console.error("Login failed:", error);
-    toast({
-      title: "Connection failed",
-      description: error?.message || "Could not connect to Farcaster",
-      variant: "destructive",
+      title: "Farcaster Auth Disabled",
+      description: "We're currently using Civic Auth. Please use that option instead.",
     });
   };
 
   return (
-    <SignInButton
-      onSuccess={handleSuccess}
-      onError={handleError}
-    />
+    <Button onClick={handleClick}>
+      Sign in with Farcaster (Disabled)
+    </Button>
   );
 };
 
@@ -152,16 +104,8 @@ interface FarcasterAuthProviderProps {
 }
 
 export const FarcasterAuthProvider: React.FC<FarcasterAuthProviderProps> = ({ children }) => {
-  // Initialize Frame SDK when the application mounts
-  useEffect(() => {
-    initializeFrameSDK();
-  }, []);
-
-  return (
-    <AuthKitProvider config={authConfig}>
-      {children}
-    </AuthKitProvider>
-  );
+  // Just pass through the children without actually trying to load Farcaster auth
+  return <>{children}</>;
 };
 
 export { useProfile };
