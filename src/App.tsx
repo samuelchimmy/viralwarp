@@ -16,48 +16,8 @@ import Privacy from "./pages/Privacy";
 import Help from "./pages/Help";
 import { FarcasterProvider } from "./components/FarcasterProvider";
 import { ThemeProvider } from "./components/ThemeProvider";
-import { FarcasterAuthProvider } from "./components/FarcasterAuth";
 import { CivicAuthRoot } from "./components/CivicAuthProvider";
-import { useEffect, useState } from "react";
-
-// Simple mock for Frame SDK as we're focusing on Civic Auth
-const mockSdk = {
-  actions: {
-    ready: async () => console.log("Mock Frame SDK: ready called"),
-  },
-  context: {},
-  wallet: {
-    ethProvider: null
-  }
-};
-
-// FrameInitializer component to initialize the mock SDK
-const FrameInitializer = () => {
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        await mockSdk.actions.ready();
-        console.log("Mock Frame SDK initialized successfully");
-      } catch (error) {
-        console.error("Failed to initialize Mock Frame SDK:", error);
-      }
-    };
-    
-    initialize();
-  }, []);
-  
-  return null;
-};
-
-// Create a new QueryClient instance
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      refetchOnWindowFocus: false,
-    },
-  },
-});
+import { useState, useEffect } from "react";
 
 // ErrorBoundary component to catch rendering errors
 const ErrorFallback = () => {
@@ -74,6 +34,16 @@ const ErrorFallback = () => {
     </div>
   );
 };
+
+// Create a new QueryClient instance
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => {
   const [hasError, setHasError] = useState(false);
@@ -100,28 +70,27 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Wrap Farcaster auth in error boundary to prevent it from breaking the app */}
       <CivicAuthRoot>
         <ThemeProvider defaultTheme="dark" storageKey="viralwarp-theme">
           <TooltipProvider>
-            <FrameInitializer />
             <Toaster />
             <Sonner />
             <BrowserRouter>
-              {/* Conditionally render Farcaster components */}
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/create" element={<CreateRequest />} />
-                <Route path="/browse" element={<BrowseRequests />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/request/:id" element={<RequestDetail />} />
-                <Route path="/docs" element={<Docs />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/help" element={<Help />} />
-                <Route path="/profile" element={<Dashboard />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <FarcasterProvider>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/create" element={<CreateRequest />} />
+                  <Route path="/browse" element={<BrowseRequests />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/request/:id" element={<RequestDetail />} />
+                  <Route path="/docs" element={<Docs />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/help" element={<Help />} />
+                  <Route path="/profile" element={<Dashboard />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </FarcasterProvider>
             </BrowserRouter>
           </TooltipProvider>
         </ThemeProvider>

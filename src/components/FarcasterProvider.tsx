@@ -42,7 +42,7 @@ interface FarcasterProviderProps {
 const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
   // Since we're focusing on Civic Auth, we'll set these to false/null
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isReady, setIsReady] = useState(true);
+  const [isReady, setIsReady] = useState(true); // Set to true to prevent loading issues
   const [isAdmin, setIsAdmin] = useState(false);
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const { toast } = useToast();
@@ -54,6 +54,7 @@ const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
   useEffect(() => {
     if (address) {
       setWalletAddress(address);
+      console.log("Wallet connected:", address);
     }
   }, [address]);
 
