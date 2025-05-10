@@ -41,7 +41,14 @@ const WalletConnector: React.FC<WalletConnectorProps> = ({ onConnect }) => {
       
       // Connect using the farcasterFrame connector
       if (connectors.length > 0) {
-        connect({ connector: connectors[0] });
+        const frameConnector = connectors.find(c => c.id === "farcasterFrame" || c.name === "Farcaster");
+        
+        if (frameConnector) {
+          connect({ connector: frameConnector });
+        } else {
+          console.log("Available connectors:", connectors.map(c => `${c.id} (${c.name})`));
+          connect({ connector: connectors[0] });
+        }
       } else {
         throw new Error("No connectors available");
       }

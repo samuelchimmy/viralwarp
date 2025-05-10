@@ -3,29 +3,55 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { sdk } from '@farcaster/frame-sdk';
 
 // Create placeholder components in case auth-kit fails to load
 const AuthKitProviderFallback: React.FC<{children: React.ReactNode; config?: any}> = ({ children }) => <>{children}</>;
 const SignInButtonFallback: React.FC<any> = () => <Button>Sign in with Farcaster</Button>;
 const useProfileFallback = () => ({ isAuthenticated: false, profile: null });
 
-// Static imports for AuthKit components
-let AuthKitProvider = AuthKitProviderFallback;
-let SignInButton = SignInButtonFallback; 
-let useProfile = useProfileFallback;
+// Create a safe mock for Frame SDK when not available in the environment
+const createFrameSdkMock = () => {
+  return {
+    actions: {
+      ready: async () => console.log("Frame SDK mock: ready called"),
+    },
+    context: {},
+    wallet: {
+      ethProvider: null
+    }
+  };
+};
+
+// Use the real SDK if available, otherwise use our mock
+let frameSdk;
+try {
+  frameSdk = (typeof window !== 'undefined' && window.farcaster) ? window.farcaster : createFrameSdkMock();
+} catch (error) {
+  console.warn("Frame SDK not available, using mock instead:", error);
+  frameSdk = createFrameSdkMock();
+}
 
 // Initialize Frame SDK when the component mounts
 const initializeFrameSDK = async () => {
   try {
-    await sdk.actions.ready();
-    console.log("Farcaster Frame SDK initialized successfully");
-    return true;
+    if (frameSdk && frameSdk.actions && frameSdk.actions.ready) {
+      await frameSdk.actions.ready();
+      console.log("Farcaster Frame SDK initialized successfully");
+      return true;
+    } else {
+      console.warn("Farcaster Frame SDK not fully available");
+      return false;
+    }
   } catch (error) {
     console.error("Failed to initialize Frame SDK:", error);
     return false;
   }
 };
+
+// Static imports for AuthKit components
+let AuthKitProvider = AuthKitProviderFallback;
+let SignInButton = SignInButtonFallback; 
+let useProfile = useProfileFallback;
 
 // Load AuthKit dynamically
 try {

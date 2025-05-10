@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { CivicAuthProvider as CivicProvider, useCivicAuth as useBaseCivicAuth } from '@civic/auth/react';
+import { CivicAuthProvider as CivicProvider } from '@civic/auth/react';
 import { useToast } from "@/hooks/use-toast";
 import { createClient } from '@supabase/supabase-js';
 import { ethers } from 'ethers';
