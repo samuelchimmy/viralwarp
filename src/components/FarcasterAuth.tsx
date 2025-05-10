@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import UserProfileDisplay from './UserProfileDisplay';
 
 // Main FarcasterAuth component - disabled for now to focus on Civic Auth
 interface FarcasterAuthProps {
@@ -25,6 +26,9 @@ export const FarcasterAuth: React.FC<FarcasterAuthProps> = () => {
     </Button>
   );
 };
+
+// Export UserProfileDisplay for use in Header.tsx
+export { UserProfileDisplay };
 
 // Provider wrapper component - simple passthrough
 export const FarcasterAuthProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {

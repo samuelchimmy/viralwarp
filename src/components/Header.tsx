@@ -60,6 +60,7 @@ const Header: React.FC = () => {
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
                 {isFarcasterAuthenticated && <UserProfileDisplay />}
+                {isCivicAuthenticated && <UserProfileDisplay />}
                 {isFarcasterAuthenticated && <WalletConnector onConnect={handleWalletConnect} />}
                 
                 <DropdownMenu>
