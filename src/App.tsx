@@ -20,37 +20,26 @@ import { FarcasterAuthProvider } from "./components/FarcasterAuth";
 import { CivicAuthRoot } from "./components/CivicAuthProvider";
 import { useEffect } from "react";
 
-// Create a safe mock for Frame SDK when not available in the environment
-const createFrameSdkMock = () => {
-  return {
-    actions: {
-      ready: async () => console.log("Frame SDK mock: ready called"),
-    },
-    context: {},
-    wallet: {
-      ethProvider: null
-    }
-  };
+// Simple mock for Frame SDK as we're focusing on Civic Auth
+const mockSdk = {
+  actions: {
+    ready: async () => console.log("Mock Frame SDK: ready called"),
+  },
+  context: {},
+  wallet: {
+    ethProvider: null
+  }
 };
 
-// Use the real SDK if available, otherwise use our mock
-let frameSdk;
-try {
-  frameSdk = await import('@farcaster/frame-sdk').then(module => module.sdk);
-} catch (error) {
-  console.warn("Frame SDK not available, using mock instead:", error);
-  frameSdk = createFrameSdkMock();
-}
-
-// FrameInitializer component to initialize the SDK
+// FrameInitializer component to initialize the mock SDK
 const FrameInitializer = () => {
   useEffect(() => {
     const initialize = async () => {
       try {
-        await frameSdk.actions.ready();
-        console.log("Farcaster Frame SDK initialized successfully");
+        await mockSdk.actions.ready();
+        console.log("Mock Frame SDK initialized successfully");
       } catch (error) {
-        console.error("Failed to initialize Frame SDK:", error);
+        console.error("Failed to initialize Mock Frame SDK:", error);
       }
     };
     
