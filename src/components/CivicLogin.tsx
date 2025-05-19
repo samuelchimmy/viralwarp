@@ -12,7 +12,7 @@ const CivicLogin: React.FC = () => {
       <CardHeader>
         <CardTitle>Sign In with Civic</CardTitle>
         <CardDescription>
-          Connect securely using Civic authentication to access your wallet and profile.
+          Authentication has been temporarily disabled while we address stability issues.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -23,7 +23,7 @@ const CivicLogin: React.FC = () => {
             className="w-24 h-24 mb-4"
           />
           <p className="text-sm text-muted-foreground text-center">
-            ViralWarp uses Civic for secure authentication and wallet management
+            Authentication has been temporarily disabled
           </p>
         </div>
       </CardContent>
@@ -33,7 +33,7 @@ const CivicLogin: React.FC = () => {
           disabled={loading} 
           className="w-full"
         >
-          {loading ? 'Signing In...' : 'Sign In with Civic'}
+          Sign In (Disabled)
         </Button>
       </CardFooter>
     </Card>

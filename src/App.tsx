@@ -70,13 +70,13 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <CivicAuthRoot>
-        <ThemeProvider defaultTheme="dark" storageKey="viralwarp-theme">
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <FarcasterProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="viralwarp-theme">
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <FarcasterProvider>
+              <CivicAuthRoot>
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/create" element={<CreateRequest />} />
@@ -90,11 +90,11 @@ const App = () => {
                   <Route path="/profile" element={<Dashboard />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
-              </FarcasterProvider>
-            </BrowserRouter>
-          </TooltipProvider>
-        </ThemeProvider>
-      </CivicAuthRoot>
+              </CivicAuthRoot>
+            </FarcasterProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };

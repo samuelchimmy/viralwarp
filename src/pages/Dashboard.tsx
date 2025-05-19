@@ -1,37 +1,14 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useFarcaster } from '@/components/FarcasterProvider';
-import { useCivicAuth } from '@/components/CivicAuthProvider';
-import UserProfile from '@/components/UserProfile';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import ActiveRequestsPreview from '@/components/ActiveRequestsPreview';
 
 const Dashboard: React.FC = () => {
-  const { isAuthenticated: isFarcasterAuthenticated, user: farcasterUser } = useFarcaster();
-  const { user: civicUser } = useCivicAuth();
   const [activeTab, setActiveTab] = useState<string>("requests");
-
-  const isAuthenticated = isFarcasterAuthenticated || civicUser?.isAuthenticated;
   
-  if (!isAuthenticated) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-1 container py-12">
-          <Card className="w-full max-w-md mx-auto">
-            <CardHeader>
-              <CardTitle>Authentication Required</CardTitle>
-              <CardDescription>Please sign in to access your dashboard</CardDescription>
-            </CardHeader>
-          </Card>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -54,7 +31,15 @@ const Dashboard: React.FC = () => {
           </TabsContent>
           
           <TabsContent value="profile">
-            <UserProfile />
+            <Card className="w-full max-w-md mx-auto">
+              <CardHeader>
+                <CardTitle>Profile Disabled</CardTitle>
+                <CardDescription>User profile functionality has been temporarily disabled</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>User profile and wallet features are currently unavailable.</p>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </main>

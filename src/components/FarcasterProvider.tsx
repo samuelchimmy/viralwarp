@@ -1,27 +1,8 @@
 
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useContext,
-  ReactNode,
-} from "react";
+import React, { createContext, useContext, ReactNode } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useAccount } from 'wagmi';
-
-interface FarcasterUser {
-  fid?: number;
-  username?: string;
-  displayName?: string;
-  pfpUrl?: string;
-  bio?: string;
-  connectedAddress?: string;
-  verifications?: string[];
-  custody?: string;
-}
 
 type FarcasterContextType = {
-  user: FarcasterUser | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
   logout: () => void;
@@ -31,60 +12,46 @@ type FarcasterContextType = {
   setWalletAddress: (address: string | null) => void;
 };
 
-const FarcasterContext = createContext<FarcasterContextType | undefined>(
-  undefined
-);
+const FarcasterContext = createContext<FarcasterContextType>({
+  isAuthenticated: false,
+  isAdmin: false,
+  logout: () => {},
+  login: () => {},
+  isReady: true,
+  walletAddress: null,
+  setWalletAddress: () => {},
+});
 
 interface FarcasterProviderProps {
   children: ReactNode;
 }
 
 const FarcasterProvider: React.FC<FarcasterProviderProps> = ({ children }) => {
-  // Since we're focusing on Civic Auth, we'll set these to false/null
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isReady, setIsReady] = useState(true); // Set to true to prevent loading issues
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
   const { toast } = useToast();
   
-  // Get wallet connection from wagmi
-  const { address } = useAccount();
-  
-  // Update wallet address when wagmi address changes
-  useEffect(() => {
-    if (address) {
-      setWalletAddress(address);
-      console.log("Wallet connected:", address);
-    }
-  }, [address]);
-
-  // Simple mock user for development
-  const user: FarcasterUser | null = null;
-
+  // Simplified mock functions
   const login = () => {
     toast({
       title: "Authentication",
-      description: "Farcaster Auth is disabled. Please use Civic Auth instead.",
+      description: "Authentication has been temporarily disabled.",
     });
   };
 
   const logout = () => {
     toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
+      title: "Authentication",
+      description: "Authentication has been temporarily disabled.",
     });
-    setWalletAddress(null);
   };
 
   const value = {
-    user,
-    isAuthenticated,
-    isAdmin,
+    isAuthenticated: false,
+    isAdmin: false,
     login,
     logout,
-    isReady,
-    walletAddress,
-    setWalletAddress
+    isReady: true,
+    walletAddress: null,
+    setWalletAddress: () => {}
   };
 
   return (
